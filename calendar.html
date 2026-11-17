@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-accent="pink">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>每日放送 · Bangumi 番组计划 — Editorial Liquid Glass</title>
+  <link rel="stylesheet" href="css/bangumi-home-preview.css?v=23" />
+  <link rel="stylesheet" href="css/prg_editorial.css?v=23" />
+  <link rel="stylesheet" href="css/prg_soft.css?v=23" />
+  <link rel="stylesheet" href="css/bangumi-wings.css?v=23" />
+  <link rel="stylesheet" href="css/brand.css?v=23" />
+  <link rel="stylesheet" href="css/topbar-account.css?v=28" />
+  <link rel="stylesheet" href="css/bangumi-subject.css?v=5" />
+  <link rel="stylesheet" href="css/bangumi-calendar.css?v=1" />
+  <link rel="stylesheet" href="css/bangumi-shell.css?v=4" />
+</head>
+<body class="bcal-page-body">
+  <!-- 1. 动态色散环境背景光晕 -->
+  <div class="ambient-canvas" id="ambientCanvas" aria-hidden="true">
+    <div class="ambient-orb orb-primary" id="orbPrimary"></div>
+    <div class="ambient-orb orb-secondary" id="orbSecondary"></div>
+    <div class="ambient-orb orb-tertiary" id="orbTertiary"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <!-- 全局轻量提示 Toast -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Margin Liquid Glass SVG 折射滤镜 (#lg-bar & #lg-thumb) -->
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+    <filter id="lg-bar" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.008 0.05" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="lg-thumb" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.006 0.02" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- ==================== 顶部全局导航栏 (#headerNeue2) ==================== -->
+  <header class="top" id="headerNeue2">
+    <div class="top-left">
+      <a href="index.html" class="brand" title="返回主页预览">
+        <span class="tv" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect class="tv-screen" x="3" y="6.5" width="18" height="13.5" rx="4"/>
+            <path class="tv-antenna" d="m8 2.5 3.5 4m4.5-4-3.5 4"/>
+            <circle class="tv-eye" cx="9.2" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <circle class="tv-eye" cx="14.8" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <path class="tv-mouth" d="M9.8 16.2c1.2.8 3.2.8 4.4 0"/>
+          </svg>
+          <span class="tv-scan" aria-hidden="true"></span>
+        </span>
+        <span class="brand-wordmark">
+          <span class="brand-serif">Bangumi</span>
+          <span class="brand-meta">
+            <span class="brand-meta-en">CALENDAR</span>
+            <span class="brand-meta-cn">每日放送</span>
+          </span>
+        </span>
+      </a>
+
+      <nav class="et nav-et" id="navMenuNeue" aria-label="全局原型页面与频道切换">
+        <a href="index.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏠 返回主页</a>
+        <a href="channel.html?type=anime" class="nav-chan" style="color:var(--accent);font-weight:700;">📺 频道首页</a>
+        <a href="calendar.html" class="nav-chan" style="color:#fff;background:var(--accent);font-weight:700;">📅 每日放送</a>
+          <a href="tag.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏷️ 标签广场</a>
+        <a href="browser.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📊 分类浏览</a>
+        <a href="subject.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🎬 条目详情</a>
+        <a href="user.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🕰️ 个人时光机</a>
+        <a href="group.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👥 小组讨论</a>
+        <a href="timeline.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⏱️ 时空管理局</a>
+        <a href="search.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔍 全站搜索</a>
+        <a href="mono.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👤 人物频道</a>
+        <a href="rakuen.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🌌 超展开</a>
+        <a href="blog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">✒️ 日志广场</a>
+        <a href="catalog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📑 目录广场</a>
+        <a href="settings.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⚙️ 个人设置</a>
+        <a href="explore.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🧭 探索实验室</a>
+        <a href="notify.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔔 电波提醒</a>
+        <a href="auth.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔑 游客/登录</a>
+        <a href="channel.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📺 频道主页</a>
+        <a href="channel.html?type=anime" class="nav-chan" data-dp="anime">动画</a>
+        <a href="channel.html?type=book" class="nav-chan" data-dp="book">书籍</a>
+        <a href="channel.html?type=music" class="nav-chan" data-dp="music">音乐</a>
+        <a href="channel.html?type=game" class="nav-chan" data-dp="game">游戏</a>
+        <a href="channel.html?type=real" class="nav-chan" data-dp="real">三次元</a>
+      </nav>
+    </div>
+
+    <form class="search" id="headerSearch" onsubmit="return false;" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input type="search" id="search_text" placeholder="搜索全站番组、人物、用户或跳转 search.html..." autocomplete="off" />
+      <kbd>/</kbd>
+    </form>
+
+    <div class="acts">
+      <nav class="et act-et" id="actBar" aria-label="快捷工具栏">
+        <a href="channel.html?type=anime" class="act et-btn" title="进入动画频道">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/></svg>
+          <span>动画频道</span>
+        </a>
+        <a href="browser.html?type=anime" class="act et-btn" title="进入番组排行榜">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <span>排行榜</span>
+        </a>
+        <button type="button" class="act et-btn" id="btnOpenThemeSettings" onclick="document.getElementById('customizeModal').hidden = false;" title="设置主题">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>外观</span>
+        </button>
+      </nav>
+      <button type="button" class="ts" id="btnThemeToggle" role="switch" aria-label="切换浅色/深色主题" title="切换浅色 / 深色模式">
+        <span class="ts-c" aria-hidden="true"><span class="ts-clouds"></span><span class="ts-stars"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.8313 24.0069C84.6075 23.1635 84.9956 22.1642 84.9956 21C84.9956 22.1642 85.3837 23.1635 86.1599 24.0069C86.9361 24.8503 87.8798 25.2903 89 25.3545C88.2679 25.3911 87.5976 25.602 86.9802 26.0053C86.3716 26.3995 85.8864 26.9312 85.5248 27.5913C85.172 28.2513 84.9956 28.9572 84.9956 29.7273C84.9956 28.563 84.6075 27.5546 83.8313 26.7112C83.0551 25.8587 82.1114 25.4095 81 25.3545ZM136 36.3545C137.111 36.2995 138.055 35.8503 138.831 35.0069C139.607 34.1635 139.996 33.1642 139.996 32C139.996 33.1642 140.384 34.1635 141.16 35.0069C141.936 35.8503 142.88 36.2903 144 36.3545C143.268 36.3911 142.598 36.602 141.98 37.0053C141.372 37.3995 140.886 37.9312 140.525 38.5913C140.172 39.2513 139.996 39.9572 139.996 40.7273C139.996 39.563 139.607 38.5546 138.831 37.7112C138.055 36.8587 137.111 36.4095 136 36.3545Z"/></svg></span><span class="ts-k"></span></span>
+      </button>
+      <div class="um-wrap" id="userAvatarWrap">
+        <a href="user.html" class="user in" id="userAvatarBtn" aria-label="进入 少年游 的个人时光机" title="进入 少年游 (UID: 553488) 的个人时光机">
+          <img src="https://lain.bgm.tv/pic/user/l/000/55/34/553488.jpg?r=1697955910&hd=1" alt="少年游" referrerpolicy="no-referrer" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 主内容容器 (#main.mainWrapper) ==================== -->
+  <main id="main" class="mainWrapper bcal-main-container">
+
+    <!-- 1. 每日放送头部与控制栏 (#header) -->
+    <section class="bcal-hero-shell" id="header" aria-label="每日放送头图与筛选工具栏">
+      <div class="bcal-hero-backdrop"></div>
+      <div class="bcal-hero-inner">
+        <div class="bcal-hero-top">
+          <div class="bcal-title-block">
+            <div class="bcal-kicker-row">
+              <span class="bcal-kicker-badge">📅 ON-AIR SCHEDULE</span>
+              <span class="bcal-kicker-sub">bgm.tv / calendar · 2026 年 10 月秋番</span>
+            </div>
+            <h1 class="bcal-main-title">每日放送 <small class="blue" id="bcalDateSub">/ 2026年11月13日 星期五</small></h1>
+          </div>
+
+          <div class="bcal-summary-wrap">
+            <span class="tip rr bcal-tip-pill" id="bcalSummaryTip">
+              本季度共 <strong>112</strong> 部番组，今日上映 <strong>14</strong> 部。共 <strong>14,088</strong> 人收看今日番组。
+            </span>
+            <div class="bcal-kpi-strip" id="bcalKpiStrip"></div>
+          </div>
+        </div>
+
+        <!-- 视图切换 / 星期聚焦 / 追番筛选工具条 -->
+        <div class="bcal-toolbar">
+          <div class="bcal-day-tabs" id="bcalDayTabs" role="tablist" aria-label="按星期筛选"></div>
+
+          <div class="bcal-controls-right">
+            <div class="bcal-filter-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="search" id="bcalFilterInput" placeholder="过滤番名 / 原名..." autocomplete="off" />
+            </div>
+
+            <button type="button" class="bcal-toggle-pill" id="bcalWatchingFilter" aria-pressed="false">
+              <span>⭐ 只看在追</span>
+              <span class="bcal-pill-count" id="bcalWatchingCount">0</span>
+            </button>
+
+            <button type="button" class="bcal-toggle-pill" id="bcalOrderToggle" aria-pressed="false" title="在「周一至周日」与「今日置顶」之间切换">
+              <span>🗓️ 周一至周日</span>
+            </button>
+
+            <div class="bcal-view-switch" id="bcalViewTabs" role="tablist" aria-label="视图模式切换">
+              <button type="button" class="bcal-view-btn is-active" data-view="poster" role="tab" aria-selected="true">🖼️ 大图海报</button>
+              <button type="button" class="bcal-view-btn" data-view="list" role="tab" aria-selected="false">📋 文字列表</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 单栏放送表主体 (#colunmSingle > div.BgmCalendar) -->
+    <div class="columns clearit bcal-columns">
+      <div id="colunmSingle" class="column bcal-single-col">
+        <div id="bcalRoot" class="BgmCalendar clearit">
+          <!-- JS 动态渲染：大图 7 列 ul.large.clearit 或文字列表视图 -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== 个性化外观设置模态窗 (#customizeModal) ==================== -->
+  <div class="glass-modal-backdrop" id="customizeModal" hidden>
+    <div class="frosted-modal-dialog" role="dialog" aria-labelledby="customizeModalTitle">
+      <header class="modal-head">
+        <div>
+          <span class="modal-kicker">SUBJECT AMBIENT ENGINE</span>
+          <h3 id="customizeModalTitle">✨ 外观模式与主题强调色设置</h3>
+        </div>
+        <button type="button" class="ep-pop-close" onclick="document.getElementById('customizeModal').hidden = true;">✕</button>
+      </header>
+      <div class="modal-body">
+        <div class="form-block">
+          <label class="form-label">光影模式 (Theme Mode)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.theme='light';this.classList.add('is-selected');this.nextElementSibling.classList.remove('is-selected');">☀️ 流光浅色 (宣纸白毛玻璃)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.theme='dark';this.classList.add('is-selected');this.previousElementSibling.classList.remove('is-selected');">🌙 曜石深色 (午夜霓虹玻璃)</button>
+          </div>
+        </div>
+        <div class="form-block">
+          <label class="form-label">品牌强调色 (Accent Color)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.accent='pink';">🌸 番组珊瑚粉 (#F09199)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='blue';">💎 晴空湛蓝 (#3B82F6)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='amber';">🍊 琥珀暖金 (#F59E0B)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='emerald';">🌿 翡翠薄荷 (#10B981)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 极简毛玻璃页脚 (#footer) ==================== -->
+  <footer class="glass-footer" id="footer">
+    <div class="footer-bottom" style="display:flex;justify-content:space-between;align-items:center;padding:24px 0;flex-wrap:wrap;gap:12px;">
+      <span>© 2008-2026 Bangumi (a.k.a. Chobits) · Daily Broadcast Calendar Prototype</span>
+      <span>
+        <a href="index.html" style="color:var(--accent);text-decoration:none;font-weight:700;margin-right:16px;">🏠 返回主页原型</a>
+        <a href="channel.html?type=anime" style="color:var(--accent);text-decoration:none;font-weight:700;margin-right:16px;">📺 动画频道</a>
+        <a href="browser.html?type=anime" style="color:var(--accent);text-decoration:none;font-weight:700;margin-right:16px;">📊 分类排行榜</a>
+        <span>On-Air Calendar · Editorial Glass</span>
+      </span>
+    </div>
+  </footer>
+
+  <script src="js/bangumi-calendar-data.js?v=1"></script>
+  <script src="js/bangumi-calendar.js?v=1"></script>
+  <script src="js/bangumi-shell.js?v=6"></script>
+</body>
+</html>

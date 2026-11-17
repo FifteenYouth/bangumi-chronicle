@@ -1,0 +1,873 @@
+/* ==========================================================================
+   Bangumi Redesign - Page 02: 未登录首页 / 登录 / 注册 / 找回密码 (auth.html)
+   Editorial Liquid Glass Design System · Prefix: bau-
+   ========================================================================== */
+
+:root {
+  --bau-surface: var(--glass-l2-bg, rgba(255, 255, 255, 0.72));
+  --bau-surface-strong: var(--glass-l3-bg, rgba(255, 255, 255, 0.88));
+  --bau-surface-soft: var(--glass-input-bg, rgba(255, 255, 255, 0.56));
+  --bau-border: var(--glass-border, rgba(255, 255, 255, 0.55));
+  --bau-border-sub: var(--glass-border-subtle, rgba(15, 23, 42, 0.08));
+  --bau-ink: var(--text-1, #181a20);
+  --bau-ink-2: var(--text-2, #4b5563);
+  --bau-muted: var(--text-3, #6b7280);
+  --bau-shadow: var(--glass-shadow, 0 18px 44px -18px rgba(15, 23, 42, 0.16));
+  --bau-blur: blur(22px) saturate(185%);
+}
+
+html[data-theme="dark"] {
+  --bau-surface: var(--glass-l2-bg, rgba(24, 26, 36, 0.76));
+  --bau-surface-strong: var(--glass-l3-bg, rgba(30, 33, 46, 0.88));
+  --bau-surface-soft: var(--glass-input-bg, rgba(36, 40, 56, 0.65));
+  --bau-border: var(--glass-border, rgba(255, 255, 255, 0.12));
+  --bau-border-sub: var(--glass-border-subtle, rgba(255, 255, 255, 0.08));
+  --bau-ink: var(--text-1, #f3f4f6);
+  --bau-ink-2: var(--text-2, #cbd5e1);
+  --bau-muted: var(--text-3, #94a3b8);
+}
+
+.bau-shell {
+  width: min(1320px, calc(100vw - 32px));
+  margin: 18px auto 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- 顶部原型模式切换条 ---------- */
+.bau-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border-radius: 20px;
+  background: var(--bau-surface);
+  -webkit-backdrop-filter: var(--bau-blur);
+  backdrop-filter: var(--bau-blur);
+  border: 1px solid var(--bau-border);
+  box-shadow: var(--bau-shadow);
+}
+
+.bau-mode-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bau-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  background: var(--accent-soft, rgba(240, 145, 153, 0.16));
+  color: var(--accent);
+}
+
+.bau-mode-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bau-mode-tab {
+  appearance: none;
+  border: 1px solid var(--bau-border-sub);
+  background: var(--bau-surface-soft);
+  color: var(--bau-ink-2);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bau-mode-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bau-mode-tab.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 16px -6px var(--accent);
+}
+
+/* ---------- 顶栏未登录 Guest 登录/注册按钮 (.idBadgerNeue > .guest) ---------- */
+.idBadgerNeue .guest {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.idBadgerNeue .guest a.guest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.idBadgerNeue .guest a.guest.login {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px -4px var(--accent);
+}
+
+.idBadgerNeue .guest a.guest.signup {
+  background: var(--bau-surface-strong);
+  color: var(--bau-ink);
+  border: 1px solid var(--bau-border-sub);
+}
+
+.idBadgerNeue .guest a.guest:hover {
+  transform: translateY(-1px);
+}
+
+/* ---------- 未登录首页视觉引导区 (#introWrapper) ---------- */
+#introWrapper {
+  border-radius: 26px;
+  background: var(--bau-surface);
+  -webkit-backdrop-filter: var(--bau-blur);
+  backdrop-filter: var(--bau-blur);
+  border: 1px solid var(--bau-border);
+  box-shadow: var(--bau-shadow);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+#introWrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 12% 18%, var(--accent-soft, rgba(240, 145, 153, 0.2)), transparent 52%),
+              radial-gradient(circle at 88% 82%, rgba(54, 156, 248, 0.14), transparent 48%);
+  pointer-events: none;
+}
+
+#intro.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+#columnIntroA {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.bau-hero-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.bau-musume-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--bau-surface-strong);
+  border: 1px solid var(--bau-border-sub);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bau-ink-2);
+}
+
+.bau-slider-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bau-slider-nav li {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--bau-ink-2);
+  background: var(--bau-surface-soft);
+  border: 1px solid var(--bau-border-sub);
+  transition: all 0.18s ease;
+}
+
+.bau-slider-nav li.is-active,
+.bau-slider-nav li:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.bau-slide-stage {
+  border-radius: 20px;
+  padding: 24px 26px;
+  background: var(--bau-surface-strong);
+  border: 1px solid var(--bau-border-sub);
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
+  gap: 20px;
+  align-items: center;
+}
+
+.bau-slide-copy h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  line-height: 1.3;
+  color: var(--bau-ink);
+  font-weight: 900;
+}
+
+.bau-slide-copy p {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--bau-ink-2);
+}
+
+.bau-slide-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.bau-slide-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bau-stat-tile {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--bau-surface-soft);
+  border: 1px solid var(--bau-border-sub);
+}
+
+.bau-stat-tile strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--accent);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.bau-stat-tile span {
+  font-size: 11.5px;
+  color: var(--bau-muted);
+}
+
+/* ---------- 右侧快速登录面板 (#homeLoginPanel) ---------- */
+#homeLoginPanel {
+  border-radius: 20px;
+  padding: 18px 20px;
+  background: var(--bau-surface-strong);
+  border: 1px solid var(--bau-border-sub);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#homeLoginPanel h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--bau-ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ---------- Guest Home Main 2-Column (#columnHomeA + #columnHomeB) ---------- */
+.bau-home-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+.bau-card {
+  border-radius: 22px;
+  padding: 18px 20px;
+  background: var(--bau-surface);
+  -webkit-backdrop-filter: var(--bau-blur);
+  backdrop-filter: var(--bau-blur);
+  border: 1px solid var(--bau-border);
+  box-shadow: var(--bau-shadow);
+}
+
+.bau-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bau-section-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--bau-ink);
+}
+
+#featuredItems.bau-featured-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bau-channel-row h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bau-channel-row h3 a {
+  color: var(--bau-ink);
+  text-decoration: none;
+}
+
+.bau-channel-row h3 a:hover {
+  color: var(--accent);
+}
+
+.bau-cover-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bau-cover-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bau-cover-frame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--bau-surface-soft);
+  border: 1px solid var(--bau-border-sub);
+}
+
+.bau-cover-frame.is-square {
+  aspect-ratio: 1 / 1;
+}
+
+.bau-cover-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.22s ease;
+}
+
+.bau-cover-card:hover .bau-cover-frame img {
+  transform: scale(1.04);
+}
+
+.bau-cover-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bau-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
+}
+
+.bau-cover-follow {
+  font-size: 11px;
+  color: var(--bau-muted);
+}
+
+.bau-subitems-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bau-subitem-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--bau-surface-soft);
+  border: 1px solid var(--bau-border-sub);
+  text-decoration: none;
+  color: inherit;
+}
+
+.bau-subitem-chip:hover {
+  border-color: var(--accent);
+}
+
+.bau-subitem-chip img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ---------- Guest Sidebar (#columnHomeB) ---------- */
+.bau-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bau-tml-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bau-tml-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--bau-border-sub);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--bau-ink-2);
+}
+
+.bau-tml-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.bau-tml-item img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.bau-tml-item a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.bau-cal-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.bau-cal-mini-grid a {
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--bau-border-sub);
+}
+
+.bau-cal-mini-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bau-ann-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.bau-ann-list a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bau-ann-list a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 居中登录 / 注册 / 重置密码卡片 (.columnsLogin.borderNeue) ---------- */
+.columnsLogin.borderNeue {
+  width: min(920px, 100%);
+  margin: 8px auto 0;
+  border-radius: 26px;
+  padding: 28px 30px;
+  background: var(--bau-surface);
+  -webkit-backdrop-filter: var(--bau-blur);
+  backdrop-filter: var(--bau-blur);
+  border: 1px solid var(--bau-border);
+  box-shadow: var(--bau-shadow);
+}
+
+.columnsLogin.borderNeue h1 {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--bau-ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bau-login-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.85fr);
+  gap: 26px;
+  align-items: start;
+}
+
+#columnLoginA {
+  padding-right: 22px;
+  border-right: 1px dashed var(--bau-border-sub);
+}
+
+#columnLoginB {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bau-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 13px;
+}
+
+.bau-form-group label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--bau-ink-2);
+}
+
+.inputtext.bau-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 13px;
+  border-radius: 12px;
+  border: 1px solid var(--bau-border-sub);
+  background: var(--bau-surface-strong);
+  color: var(--bau-ink);
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.inputtext.bau-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft, rgba(240, 145, 153, 0.2));
+}
+
+.bau-captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bau-captcha-box {
+  height: 40px;
+  min-width: 128px;
+  border-radius: 11px;
+  overflow: hidden;
+  border: 1px solid var(--bau-border-sub);
+  background: var(--bau-surface-strong);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bau-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.inputBtn.bau-submit {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 800;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -8px var(--accent);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.inputBtn.bau-submit:hover {
+  transform: translateY(-1px);
+}
+
+.passkeyLoginButton.bau-passkey {
+  appearance: none;
+  border: 1px solid var(--bau-border-sub);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--bau-surface-strong);
+  color: var(--bau-ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.passkeyLoginButton.bau-passkey:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btnPink.bau-btn-pink,
+.btnBlue.bau-btn-blue,
+.btnGray.bau-btn-gray {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btnPink.bau-btn-pink {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btnBlue.bau-btn-blue {
+  background: #369cf8;
+  color: #fff;
+}
+
+.btnGray.bau-btn-gray {
+  background: var(--bau-surface-soft);
+  color: var(--bau-ink-2);
+  border-color: var(--bau-border-sub);
+}
+
+/* ---------- 注册意图选择 (#loginSelection) & 提示 (#signupAlert) ---------- */
+.loginSelection ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.loginSelection li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: var(--bau-surface-strong);
+  border: 1px solid var(--bau-border-sub);
+  color: var(--bau-ink);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+
+.loginSelection li a:hover {
+  border-color: var(--accent);
+  transform: translateX(3px);
+}
+
+.bau-alert-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--bau-surface-strong);
+  border: 1px solid rgba(240, 145, 153, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bau-reg-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bau-reg-sources label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bau-surface-soft);
+  border: 1px solid var(--bau-border-sub);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.bau-demo-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bau-demo-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--bau-surface-strong);
+  border: 1px solid var(--bau-border-sub);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.16s ease;
+}
+
+.bau-demo-card:hover {
+  border-color: var(--accent);
+}
+
+.bau-demo-card img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bau-family-bar {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--bau-border-sub);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--bau-muted);
+}
+
+.bau-family-bar a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.bau-stars-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+}
+
+.bau-stars-glyph {
+  color: #f59e0b;
+  letter-spacing: 0.03em;
+}
+
+.bau-stars-num {
+  font-weight: 800;
+  color: var(--bau-ink);
+}
+
+.bau-pw-meter {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--bau-border-sub);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.bau-pw-meter-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+@media (max-width: 960px) {
+  #intro.columns,
+  .bau-home-columns,
+  .bau-slide-stage,
+  .bau-login-grid {
+    grid-template-columns: 1fr;
+  }
+  #columnLoginA {
+    padding-right: 0;
+    padding-bottom: 18px;
+    border-right: 0;
+    border-bottom: 1px dashed var(--bau-border-sub);
+  }
+  .bau-cover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

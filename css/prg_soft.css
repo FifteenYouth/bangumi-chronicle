@@ -1,0 +1,586 @@
+/* ==========================================================================
+   ★ 收视进度管理器 · 软玻璃层 (Soft Glass Layer) —— v17
+   目的：把上一版「报刊排版」的直角 + 发丝线语法，替换成与全站一致的
+        圆角软玻璃语法（r-xl / r-lg 大圆角、chip 软底、间距分区、胶囊按钮）。
+   原则：
+     ① 不再用 1px 直线切分区块 —— 一律用「圆角面板 + 留白」建立层次。
+     ② 左侧套片列表 = 一枚圆角软轨，每个条目是圆角行（选中时轻微抬起）。
+     ③ 右侧头条 = 无边框排版 + 胶囊主按钮 + 圆角量规。
+     ④ 分集 = 圆角小磁贴，彼此靠 8px 间隙分隔，不再用竖线。
+     ⑤ 编目带整体收进一枚圆角浅色面板。
+   ========================================================================== */
+
+/* ---------------- 外层容器：软玻璃本体 ---------------- */
+.cinema-progress-deck.prg-editorial,
+.prg-editorial {
+  border: 1px solid var(--glass-border, var(--line)) !important;
+  border-radius: var(--r-2xl) !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--surface) 88%, transparent),
+      color-mix(in srgb, var(--surface) 72%, transparent)) !important;
+  box-shadow: var(--ring), var(--sh-sm) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(160%) !important;
+  backdrop-filter: blur(26px) saturate(160%) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* ---------------- 刊头：去掉底线，只留呼吸 ---------------- */
+.prg-editorial .prg-masthead {
+  padding: 22px 24px 16px;
+  border-bottom: 0;
+  gap: 16px 24px;
+}
+
+.prg-editorial .prg-kicker {
+  font-size: 9.5px;
+  letter-spacing: 0.26em;
+  color: var(--faint);
+}
+
+.prg-editorial .prg-greeting {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* 控制托盘：圆角胶囊内部再用圆角胶囊堆叠（共享 .prg-glassbar 的液态玻璃） */
+.prg-editorial .prg-masthead-controls.prg-glassbar {
+  gap: 14px;
+  height: 50px;
+  padding: 0 18px;
+  border-radius: 999px;
+}
+.prg-editorial .prg-masthead-controls > * + * {
+  padding-left: 0;
+  border-left: 0;
+}
+.prg-editorial .prg-tabs { gap: 4px; }
+
+/* 页签：从「下划线制」改成真正的圆角软选中药丸 */
+.prg-editorial .prg-tab,
+.prg-editorial .prg-viewtools .seg-pill {
+  position: relative;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.prg-editorial .prg-tab::after,
+.prg-editorial .prg-viewtools .seg-pill::after {
+  display: none; /* 去掉下划线指示器 */
+}
+.prg-editorial .prg-tab:hover,
+.prg-editorial .prg-viewtools .seg-pill:hover {
+  background: var(--chip);
+  color: var(--ink);
+}
+.prg-editorial .prg-tab.is-active,
+.prg-editorial .prg-viewtools .seg-pill.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px var(--line), 0 2px 6px -2px rgba(23, 24, 26, 0.12);
+}
+.prg-editorial .prg-tab.is-active .pill-count { color: var(--accent); }
+
+/* ---------------- 跨页：改成「软轨 + 头条」两块圆角区域 ---------------- */
+.prg-editorial .prg-spread {
+  grid-template-columns: 288px minmax(0, 1fr);
+  gap: 18px;
+  padding: 0 20px 18px;
+  align-items: start;
+}
+
+/* 左：在看套片软轨（一枚圆角浅色面板，条目是圆角行） */
+.prg-editorial .prg-index {
+  border-right: 0;
+  border-radius: var(--r-xl);
+  background: color-mix(in srgb, var(--ink) 3.2%, transparent);
+  padding: 12px 10px 14px;
+}
+
+.prg-editorial .prg-index-head {
+  padding: 2px 10px 10px;
+  border-bottom: 0;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--faint);
+}
+
+.prg-editorial .prg-index-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prg-editorial .prg-index-row {
+  border-radius: 14px;
+  padding: 10px 11px 11px 12px;
+  gap: 9px;
+  transition: background 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+/* 去掉行与行之间的直线 */
+.prg-editorial .prg-index-row + .prg-index-row {
+  border-top: 0;
+  margin-top: 0;
+}
+/* 左侧选中竖条改成圆角细条 */
+.prg-editorial .prg-index-row::before {
+  left: 4px;
+  top: 50%;
+  bottom: auto;
+  width: 3px;
+  height: 26px;
+  margin-top: -13px;
+  border-radius: 999px;
+  transform: scaleY(0);
+  transform-origin: center;
+}
+.prg-editorial .prg-index-row:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+
+.prg-editorial .prg-index-row.is-selected {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 4px 12px -6px rgba(23, 24, 26, 0.24);
+}
+.prg-editorial .prg-index-row.is-selected::before { transform: scaleY(1); }
+.prg-editorial .prg-index-row.is-selected .prg-index-no { color: var(--accent); }
+
+/* 序号 / 标题 / 译名 / 进度：字阶柔和一档 */
+.prg-editorial .prg-index-no {
+  align-self: center;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+.prg-editorial .prg-index-jp {
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+  color: var(--muted);
+}
+.prg-editorial .prg-index-row.is-selected .prg-index-jp { color: var(--ink); }
+.prg-editorial .prg-index-cn { font-size: 10.5px; color: var(--faint); }
+.prg-editorial .prg-index-frac {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+}
+.prg-editorial .prg-index-check {
+  padding: 2px 7px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--accent-strong);
+  transition: background 0.18s var(--ease);
+}
+.prg-editorial .prg-index-check:hover {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent-strong);
+  border-bottom-color: transparent;
+}
+/* 进度细线改成圆角胶囊 */
+.prg-editorial .prg-index-rule {
+  height: 3px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+  overflow: hidden;
+}
+.prg-editorial .prg-index-rule i { border-radius: 999px; }
+
+/* 缩略图圆角 */
+.prg-editorial .prg-index-thumb {
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+/* ---------------- 右：头条（无边框排版 + 胶囊主按钮） ---------------- */
+.prg-editorial .prg-feature {
+  padding: 6px 8px 2px 6px;
+}
+
+.prg-editorial .prg-feature-kicker {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--faint);
+}
+
+.prg-editorial .prg-feature-jp {
+  font-size: clamp(23px, 2.1vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.prg-editorial .prg-feature-cn {
+  font-size: 12.5px;
+  color: var(--faint);
+  letter-spacing: 0.01em;
+}
+
+/* 「修改收藏」改成小胶囊，而不是下划线文字 */
+.prg-editorial .prg-edit {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--chip);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  color: var(--muted);
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.prg-editorial .prg-edit:hover {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+  border-bottom-color: transparent;
+}
+
+/* 海报：圆角 + 柔和投影 */
+.prg-editorial .prg-figure img {
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 24px -14px rgba(23, 24, 26, 0.5);
+}
+.prg-editorial .prg-figure figcaption {
+  margin-top: 7px;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--faint);
+}
+
+/* 主操作：改成整枚圆角胶囊按钮（与全站按钮同源） */
+.prg-editorial .prg-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 92%, #fff 8%),
+      var(--accent-strong));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 8px 18px -10px color-mix(in srgb, var(--accent-strong) 80%, transparent);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-align: left;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), filter 0.18s var(--ease);
+}
+.prg-editorial .prg-primary .prg-primary-arrow {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.86);
+}
+.prg-editorial .prg-primary:hover {
+  color: #fff;
+  padding-left: 18px;
+  filter: brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 12px 24px -12px color-mix(in srgb, var(--accent-strong) 90%, transparent);
+}
+.prg-editorial .prg-primary:hover .prg-primary-arrow { transform: translateX(4px); }
+.prg-editorial .prg-primary:active { transform: scale(0.972); }
+
+/* 进度量规：8px 圆角胶囊 + 圆角填充 */
+.prg-editorial .prg-meter { margin-top: 18px; }
+.prg-editorial .prg-meter-num {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.prg-editorial .prg-meter-pct {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--accent-strong);
+}
+.prg-editorial .prg-meter-rule {
+  height: 8px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  overflow: hidden;
+}
+.prg-editorial .prg-meter-rule i {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+}
+.prg-editorial .prg-meter-meta {
+  margin-top: 9px;
+  font-size: 11px;
+  color: var(--faint);
+}
+.prg-editorial .prg-meter-meta b { color: var(--muted); }
+
+/* 修订区：收进一枚圆角浅底，而不是靠上横线 */
+.prg-editorial .prg-revise {
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-top: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 3.5%, transparent);
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+}
+.prg-editorial .prg-revise input[type="number"] {
+  width: 52px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 12px;
+}
+.prg-editorial .prg-revise input[type="number"]:focus {
+  border-bottom-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.prg-editorial .batch-ep-submit {
+  padding: 4px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.prg-editorial .batch-ep-submit:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-strong);
+  border-bottom-color: transparent;
+}
+
+/* 脚注链接：改成软胶囊组 */
+.prg-editorial .prg-footnotes {
+  margin-top: 14px;
+  gap: 6px;
+}
+.prg-editorial .prg-footnotes a {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 11px;
+  color: var(--muted);
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.prg-editorial .prg-footnotes a:first-child { padding-left: 11px; }
+.prg-editorial .prg-footnotes a + a { border-left: 0; }
+.prg-editorial .prg-footnotes a:hover {
+  background: var(--chip);
+  color: var(--ink);
+}
+
+/* ---------------- 编目带：收进一枚圆角浅色面板 ---------------- */
+.prg-editorial .prg-ledger {
+  margin: 0 20px 20px;
+  padding: 10px 12px 12px;
+  border-top: 0;
+  border-radius: var(--r-xl);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+
+.prg-editorial .prg-ledger-head {
+  padding: 2px 6px 10px;
+  border-bottom: 0;
+}
+.prg-editorial .legend-item {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.prg-editorial .legend-dot { width: 7px; height: 7px; }
+.prg-editorial .prg-ledger-hint { font-size: 8.5px; letter-spacing: 0.12em; }
+
+/* 分集：圆角磁贴 + 8px 间隙（彻底去掉竖线） */
+.prg-editorial .ep-grid-buttons {
+  gap: 7px;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.prg-editorial .ep-grid-buttons::-webkit-scrollbar { height: 0; }
+.prg-editorial .ep-cell-btn {
+  flex: 1 1 0;
+  min-width: 54px;
+  gap: 5px;
+  padding: 11px 12px 12px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: background 0.18s var(--ease), box-shadow 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.prg-editorial .ep-cell-btn + .ep-cell-btn { border-left: 0; }
+.prg-editorial .ep-cell-btn:hover {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px transparent, 0 6px 14px -8px rgba(23, 24, 26, 0.36);
+  transform: translateY(-1px);
+}
+.prg-editorial .ep-cell-btn:active { transform: scale(0.97); }
+
+/* 状态底标：改成圆角短条 */
+.prg-editorial .ep-cell-btn::after {
+  left: 12px;
+  right: 12px;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.prg-editorial .ep-no {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+.prg-editorial .ep-lab {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--faint);
+}
+
+/* 五态：一律用圆角磁贴的软底，不用色块直角 */
+.prg-editorial .ep-cell-btn.st-watched {
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 26%, transparent);
+}
+.prg-editorial .ep-cell-btn.st-watched:hover {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+.prg-editorial .ep-cell-btn.st-watched .ep-no { color: var(--accent-strong); }
+.prg-editorial .ep-cell-btn.st-watched .ep-lab { color: var(--accent-strong); }
+.prg-editorial .ep-cell-btn.st-watched::after {
+  background: var(--accent-strong);
+  opacity: 0.9;
+}
+
+.prg-editorial .ep-cell-btn.st-air {
+  background: color-mix(in srgb, var(--st-air) 7%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--st-air) 24%, transparent);
+}
+.prg-editorial .ep-cell-btn.st-air .ep-no { color: var(--st-air); }
+.prg-editorial .ep-cell-btn.st-air .ep-lab { color: var(--st-air); }
+.prg-editorial .ep-cell-btn.st-air::after { background: var(--st-air); opacity: 0.75; }
+
+.prg-editorial .ep-cell-btn.st-queue {
+  background: color-mix(in srgb, var(--st-wish) 6%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--st-wish) 22%, transparent);
+}
+.prg-editorial .ep-cell-btn.st-queue .ep-no { color: var(--st-wish); }
+.prg-editorial .ep-cell-btn.st-queue::after { background: var(--st-wish); opacity: 0.7; }
+
+.prg-editorial .ep-cell-btn.st-drop { opacity: 0.82; }
+.prg-editorial .ep-cell-btn.st-drop .ep-no { color: var(--st-drop); }
+.prg-editorial .ep-cell-btn.st-drop::after { background: var(--st-drop); opacity: 0.6; }
+
+.prg-editorial .ep-cell-btn.st-na {
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent);
+}
+.prg-editorial .ep-cell-btn.st-na .ep-no { color: var(--faint); opacity: 0.5; }
+.prg-editorial .ep-cell-btn.st-na .ep-lab { opacity: 0.6; }
+.prg-editorial .ep-cell-btn.st-na::after { background: transparent; }
+.prg-editorial .ep-cell-btn.st-na:hover .ep-no { opacity: 0.9; }
+
+/* ---------------- 平铺版面：圆角软卡 + 间隙 ---------------- */
+.prg-editorial .prg-tiny-view {
+  gap: 14px;
+  padding: 0 20px 20px;
+  border-top: 0;
+}
+.prg-editorial .tiny-card {
+  padding: 15px 16px 13px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.prg-editorial .tiny-card + .tiny-card { border-left: 0; }
+.prg-editorial .tiny-card .gauge-track {
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.prg-editorial .tiny-card .gauge-fill { border-radius: 999px; }
+.prg-editorial .tiny-card .ep-cell-btn {
+  border-radius: 7px;
+  box-shadow: none;
+  background: var(--chip);
+}
+.prg-editorial .tiny-card .ep-cell-btn.st-watched {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: none;
+}
+.prg-editorial .tiny-card .ep-cell-btn.st-air {
+  background: color-mix(in srgb, var(--st-air) 13%, transparent);
+  box-shadow: none;
+}
+
+/* ---------------- 深色模式：软底改为提亮 ---------------- */
+html[data-theme="dark"] .prg-editorial .prg-index,
+html[data-theme="dark"] .prg-editorial .prg-ledger {
+  background: color-mix(in srgb, #fff 4.5%, transparent);
+}
+html[data-theme="dark"] .prg-editorial .prg-index-row.is-selected {
+  background: color-mix(in srgb, #fff 8%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+html[data-theme="dark"] .prg-editorial .prg-tab.is-active,
+html[data-theme="dark"] .prg-editorial .prg-viewtools .seg-pill.is-active {
+  background: color-mix(in srgb, #fff 12%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+html[data-theme="dark"] .prg-editorial .ep-cell-btn {
+  background: color-mix(in srgb, #fff 5%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+html[data-theme="dark"] .prg-editorial .prg-meter-rule,
+html[data-theme="dark"] .prg-editorial .prg-index-rule {
+  background: color-mix(in srgb, #fff 12%, transparent);
+}
+
+/* ---------------- 窄屏：软轨转横向 ---------------- */
+@media (max-width: 1180px) {
+  .prg-editorial .prg-spread {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .prg-editorial .prg-index { border-bottom: 0; padding: 10px 10px 12px; }
+  .prg-editorial .prg-index-list {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+  }
+  .prg-editorial .prg-index-list .prg-index-row {
+    flex: 0 0 236px;
+    border-top: 0;
+    margin-top: 0;
+  }
+  .prg-editorial .prg-index-list .prg-index-row + .prg-index-row { border-left: 0; }
+}
+
+@media (max-width: 860px) {
+  .prg-editorial .prg-masthead { padding: 18px 16px 14px; }
+  .prg-editorial .prg-spread { padding: 0 14px 14px; }
+  .prg-editorial .prg-ledger { margin: 0 14px 14px; }
+  .prg-editorial .prg-tiny-view { padding: 0 14px 14px; }
+  .prg-editorial .prg-primary { font-size: 14px; padding: 12px 15px; }
+}

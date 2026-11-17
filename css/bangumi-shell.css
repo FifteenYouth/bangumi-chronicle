@@ -1,0 +1,1243 @@
+/* ==========================================================================
+   bangumi-shell.css · 全站共享壳层 (Shared Editorial Liquid Glass Shell)
+   Phase A2 / WORK_ORDER_TODO.md
+   纯增量、幂等、零回归：所有类名 bsh- 前缀，所有 ID bsh- 前缀，
+   与既有 5 张原型页的样式零冲突。基座令牌复用 bangumi-home-preview.css。
+   ========================================================================== */
+
+:root {
+  --bsh-dock-h: 50px;
+  --bsh-float-top: 116px;
+}
+
+/* 让固定浮动 Dock 不遮挡各页原有页脚文字（温和处理，仅补底部留白） */
+html.bsh-has-dock .glass-footer { margin-bottom: 86px; }
+
+/* ==================== 0. 顶栏无框悬浮防护（阻断原站 #headerNeue2 / #headerSearch 矩形底框污染） ==================== */
+header.top#headerNeue2[data-bgm-shell-el="1"],
+html[data-theme="dark"] header.top#headerNeue2[data-bgm-shell-el="1"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"]::before {
+  display: none !important;
+  content: none !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"] #navMenuNeue,
+header.top#headerNeue2[data-bgm-shell-el="1"] #actBar,
+header.top#headerNeue2[data-bgm-shell-el="1"] #headerSearch {
+  position: relative !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: color-mix(in srgb, var(--surface) 84%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  box-shadow: inset 0 0 0 1px var(--line), var(--sh-xs) !important;
+  overflow: visible !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"] #navMenuNeue {
+  padding: 4px 6px !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"] #actBar {
+  padding: 4px !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"] #headerSearch {
+  padding: 0 12px 0 16px !important;
+}
+html[data-theme="dark"] header.top#headerNeue2[data-bgm-shell-el="1"] #navMenuNeue,
+html[data-theme="dark"] header.top#headerNeue2[data-bgm-shell-el="1"] #actBar,
+html[data-theme="dark"] header.top#headerNeue2[data-bgm-shell-el="1"] #headerSearch {
+  background: color-mix(in srgb, var(--surface) 86%, transparent) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 16px rgba(0, 0, 0, 0.28) !important;
+}
+header.top#headerNeue2[data-bgm-shell-el="1"] #headerSearch:focus-within {
+  background: var(--surface) !important;
+  box-shadow: inset 0 0 0 1.5px var(--accent), var(--sh-sm) !important;
+}
+
+/* ==================== 1. 底部灵动岛 Dock (可展开收缩 · 真液态毛玻璃 + SVG 图标与文字) ==================== */
+#bsh-dock.bsh-dock {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 20px !important;
+  transform: translateX(-50%) !important;
+  z-index: 480 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 6px 8px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.58) 0%,
+    rgba(255, 255, 255, 0.38) 100%
+  ) !important;
+  backdrop-filter: blur(28px) saturate(200%) url("#lg-bar") !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.78),
+    inset 1.6px 2.5px 0 -1px rgba(255, 255, 255, 0.65),
+    inset -1.6px -2px 0 -1px rgba(255, 255, 255, 0.32),
+    0 18px 46px -8px rgba(15, 23, 42, 0.22),
+    0 4px 14px rgba(15, 23, 42, 0.08) !important;
+  transition: padding 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease !important;
+  max-width: calc(100vw - 24px) !important;
+}
+
+html[data-theme="dark"] #bsh-dock.bsh-dock {
+  background: linear-gradient(
+    145deg,
+    rgba(30, 33, 42, 0.52) 0%,
+    rgba(16, 18, 24, 0.40) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+    inset 1.8px 3px 0 -2px rgba(255, 255, 255, 0.30),
+    inset -2px -2px 0 -2px rgba(255, 255, 255, 0.14),
+    inset 0 -6px 14px -6px rgba(255, 255, 255, 0.06),
+    0 22px 52px -8px rgba(0, 0, 0, 0.62),
+    0 6px 18px rgba(0, 0, 0, 0.34) !important;
+}
+
+#bsh-dock .et-thumb {
+  position: absolute !important;
+  top: 5px !important;
+  bottom: 5px !important;
+  left: 0 !important;
+  border-radius: 999px !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+.bsh-dock-user {
+  position: relative !important;
+  z-index: 1 !important;
+  width: auto !important;
+  height: 36px !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 11px 0 4px !important;
+  border-radius: 999px !important;
+  text-decoration: none !important;
+  color: var(--ink) !important;
+  transition: background 0.18s ease !important;
+}
+
+.bsh-dock-user:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.bsh-dock-ava {
+  width: 28px !important;
+  height: 28px !important;
+  flex: 0 0 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28) !important;
+}
+
+.bsh-dock-name {
+  font-family: var(--sans) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  max-width: 104px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  letter-spacing: -0.01em !important;
+}
+
+.bsh-dock-unread-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background: var(--accent) !important;
+  box-shadow: 0 0 8px var(--accent) !important;
+}
+
+/* 可展开/收缩的中部功能托盘 */
+.bsh-dock-tray {
+  position: relative !important;
+  z-index: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  max-width: 720px !important;
+  opacity: 1 !important;
+  overflow: hidden !important;
+  transition:
+    max-width 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.22s ease,
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+#bsh-dock.is-collapsed .bsh-dock-tray {
+  max-width: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.94) !important;
+}
+
+.bsh-dock-toggle {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: 0 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  color: var(--muted) !important;
+  cursor: pointer !important;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.16s ease !important;
+}
+
+.bsh-dock-btn {
+  position: relative !important;
+  z-index: 1 !important;
+  height: 34px !important;
+  padding: 0 11px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  color: var(--muted) !important;
+  font-family: var(--sans) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.16s ease !important;
+}
+
+.bsh-dock-btn svg,
+.bsh-dock-toggle svg {
+  width: 15.5px !important;
+  height: 15.5px !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.bsh-dock-btn:hover,
+.bsh-dock-btn[data-selected],
+.bsh-dock-toggle:hover {
+  color: var(--ink) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+
+.bsh-dock-btn:active svg,
+.bsh-dock-toggle:active svg {
+  transform: scale(0.9) !important;
+}
+
+.bsh-dock-label,
+.bsh-dock-toggle-label {
+  line-height: 1 !important;
+}
+
+#bsh-dock.is-collapsed .bsh-dock-toggle-ico {
+  transform: rotate(180deg) !important;
+}
+
+.bsh-dock-badge {
+  min-width: 16px !important;
+  height: 16px !important;
+  padding: 0 4.5px !important;
+  border-radius: 999px !important;
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  font-family: var(--mono) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 16px !important;
+  text-align: center !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+.bsh-dock-badge[hidden] {
+  display: none !important;
+}
+
+.bsh-dock-sep {
+  width: 1px !important;
+  height: 16px !important;
+  background: color-mix(in srgb, var(--ink) 12%, transparent) !important;
+  margin: 0 3px !important;
+  flex-shrink: 0 !important;
+}
+
+#headerNeue2[data-bgm-shell-el="1"] {
+  padding: 0 24px !important;
+  gap: 14px !important;
+}
+#headerNeue2[data-bgm-shell-el="1"] .top-left {
+  gap: 14px !important;
+}
+#headerNeue2[data-bgm-shell-el="1"] .nav-chan {
+  padding: 0 9px !important;
+}
+#headerNeue2[data-bgm-shell-el="1"] #headerSearch.search {
+  position: relative !important;
+  right: auto !important;
+  flex: 1 1 320px !important;
+  min-width: 240px !important;
+  max-width: 420px !important;
+  height: 40px !important;
+  margin: 0 auto !important;
+  padding: 0 10px 0 14px !important;
+  gap: 8px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  background: color-mix(in srgb, var(--c-glass) 12%, color-mix(in srgb, var(--canvas) 34%, transparent)) !important;
+}
+#headerNeue2[data-bgm-shell-el="1"] #headerSearch.search #search_text {
+  flex: 1 1 120px !important;
+  min-width: 96px !important;
+  width: auto !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+/* ==================== 2. 伪春菜 (ukagaka_shell / #robot) ==================== */
+.bsh-robot {
+  position: fixed;
+  right: 22px;
+  bottom: 84px;
+  z-index: 470;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+}
+.bsh-robot[hidden] { display: none !important; }
+
+.bsh-robot-bubble {
+  max-width: 232px;
+  padding: 11px 14px;
+  border-radius: 15px 15px 4px 15px;
+  background: var(--glass-l3-bg);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--accent);
+  box-shadow: var(--glass-popover-shadow);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-1);
+}
+.bsh-robot-bubble strong { color: var(--accent-strong); }
+.bsh-robot-sub {
+  display: block;
+  margin-top: 5px;
+  font-size: 10.5px;
+  color: var(--text-3);
+  font-family: var(--mono);
+}
+
+.bsh-robot-body {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(155deg, var(--accent-soft), var(--glass-l3-bg));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--sh-md);
+  cursor: pointer;
+  font-size: 25px;
+  animation: bshFloat 3.4s ease-in-out infinite;
+  transition: transform 0.2s var(--ease-spring, ease);
+}
+.bsh-robot-body:hover { transform: scale(1.08) rotate(-5deg); }
+@keyframes bshFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* ==================== 3. 通用浮动面板 (cluetip / 贴贴 / 表情 / 分页) ==================== */
+.bsh-float {
+  position: fixed;
+  left: 50%;
+  top: var(--bsh-float-top);
+  transform: translateX(-50%);
+  z-index: 560;
+  width: 300px;
+  padding: 14px;
+  border-radius: var(--r-2xl);
+  background: var(--glass-l3-bg);
+  -webkit-backdrop-filter: blur(30px) saturate(210%);
+  backdrop-filter: blur(30px) saturate(210%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-popover-shadow);
+  animation: bshFloatIn 0.22s var(--ease-spring, ease);
+}
+.bsh-float[hidden] { display: none !important; }
+@keyframes bshFloatIn {
+  from { opacity: 0; transform: translate(-50%, -8px) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.bsh-cluetip { width: 236px; }
+.bsh-like { width: 264px; }
+.bsh-smiley { width: 344px; }
+.bsh-pager-demo { width: auto; max-width: 580px; }
+
+.bsh-float-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+.bsh-float-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: 0.01em;
+}
+.bsh-float-x {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border-subtle);
+  background: var(--glass-input-bg);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-2);
+  transition: all 0.16s ease;
+}
+.bsh-float-x:hover { background: var(--accent-soft); border-color: var(--accent); }
+
+.bsh-float-note {
+  margin-top: 10px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-3);
+  font-family: var(--mono);
+  word-break: break-all;
+}
+
+/* 章节进度气泡 .prg_popup */
+.bsh-clue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.bsh-clue-btn {
+  padding: 8px 4px;
+  border-radius: 9px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-input-bg);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.bsh-clue-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+
+/* 贴贴 like_dropdown + likes_grid */
+.bsh-like-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+.bsh-like-emoji {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-input-bg);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.16s var(--ease-spring, ease);
+}
+.bsh-like-emoji:hover { transform: scale(1.13); border-color: var(--accent); background: var(--accent-soft); }
+.bsh-likes-grid { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; min-height: 22px; }
+.bsh-likes-chip {
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  background: var(--accent-faint);
+  border: 1px solid var(--accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent-strong);
+  animation: bshPop 0.24s var(--ease-spring, ease);
+}
+@keyframes bshPop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* BBCode 工具栏 + 6 组表情 */
+.bsh-bbcode-bar { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+.bsh-bbcode-btn {
+  min-width: 28px;
+  height: 27px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-input-bg);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.bsh-bbcode-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+
+.bsh-emoji-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.bsh-emoji-tab {
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text-3);
+  cursor: pointer;
+}
+.bsh-emoji-tab.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+
+.bsh-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  max-height: 156px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+.bsh-emoji-cell {
+  padding: 7px 3px;
+  border-radius: 7px;
+  border: 1px solid var(--glass-border-subtle);
+  background: var(--glass-input-bg);
+  font-size: 10.5px;
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bsh-emoji-cell:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+
+/* ==================== 4. 分页器 .page_inner ==================== */
+.bsh-pager { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.bsh-page-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 9px;
+  border-radius: 9px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-input-bg);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.bsh-page-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+.bsh-page-btn.p_cur { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 3px 12px var(--accent-faint); }
+.bsh-page-btn.is-disabled { opacity: 0.4; pointer-events: none; }
+.bsh-page-ellipsis { padding: 0 3px; color: var(--text-3); font-size: 12px; }
+.bsh-page-info { margin-left: 8px; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+
+/* ==================== 5. 个性化模态框 · 3 Tab 增强 ==================== */
+.bsh-dialog-wide { max-width: 620px; }
+
+.bsh-modal-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 4px;
+  border-radius: var(--r-md);
+  background: var(--glass-input-bg);
+  border: 1px solid var(--glass-border-subtle);
+}
+.bsh-modal-tab {
+  flex: 1;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.bsh-modal-tab:hover { color: var(--accent-strong); }
+.bsh-modal-tab.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.bsh-modal-panel { display: flex; flex-direction: column; gap: 14px; }
+.bsh-modal-panel[hidden] { display: none !important; }
+/* 作者级 .form-block{display:flex} 会覆盖 UA 的 [hidden]，需显式兜底 */
+.form-block[hidden] { display: none !important; }
+
+.bsh-market-note {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-3);
+  padding-bottom: 2px;
+}
+.bsh-market { display: flex; flex-direction: column; gap: 8px; }
+.bsh-market-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border-radius: var(--r-md);
+  background: var(--glass-input-bg);
+  border: 1px solid var(--glass-border-subtle);
+}
+.bsh-market-ico {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  font-size: 16px;
+}
+.bsh-market-txt { flex: 1; min-width: 0; }
+.bsh-market-txt b { display: block; font-size: 12.5px; color: var(--text-1); }
+.bsh-market-txt small { display: block; margin-top: 2px; font-size: 10.5px; color: var(--text-3); line-height: 1.45; }
+.bsh-market-try {
+  flex: 0 0 auto;
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-strong);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.bsh-market-try:hover { background: var(--accent); color: #fff; }
+
+.bsh-cache-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bsh-cache-cell {
+  padding: 11px 12px;
+  border-radius: var(--r-md);
+  background: var(--glass-input-bg);
+  border: 1px solid var(--glass-border-subtle);
+  text-align: center;
+}
+.bsh-cache-cell small { display: block; font-size: 10.5px; color: var(--text-3); }
+.bsh-cache-cell b {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--grotesk, var(--mono));
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==================== 6. 收藏评分盒 ThickBox (#collectBoxForm) ==================== */
+.bsh-collect-body { gap: 13px; }
+.bsh-stars { display: flex; align-items: center; gap: 1px; flex-wrap: wrap; }
+.bsh-star {
+  font-size: 21px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 0.14s var(--ease-spring, ease), color 0.14s ease;
+  user-select: none;
+}
+.bsh-star:hover { transform: scale(1.22); }
+.bsh-star.is-on { color: #f59e0b; }
+.bsh-score {
+  margin-left: 9px;
+  font-family: var(--grotesk, var(--mono));
+  font-size: 21px;
+  font-weight: 800;
+  color: #f59e0b;
+  font-variant-numeric: tabular-nums;
+}
+.bsh-score-hint { margin-left: 3px; font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+
+.bsh-textarea { min-height: 76px; resize: vertical; line-height: 1.6; font-family: var(--sans); }
+.bsh-privacy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.bsh-privacy input { accent-color: var(--accent); width: 15px; height: 15px; }
+.bsh-foot-note { font-size: 10.5px; color: var(--text-3); font-family: var(--mono); }
+.bsh-primary-btn { cursor: pointer; }
+
+/* ==================== 7. 四列页脚 (自动补齐 / mountFooterLinks) ==================== */
+.bsh-footer-injected { margin-top: 30px; }
+.bsh-footer-injected .footer-col a { color: var(--text-2); text-decoration: none; }
+.bsh-footer-injected .footer-col a:hover { color: var(--accent-strong); text-decoration: underline; }
+
+/* ==================== 7b. 游客态顶栏登录/注册胶囊 ==================== */
+.bsh-guest-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bsh-guest-link,
+.bsh-guest-signup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.bsh-guest-link {
+  color: var(--text-1);
+  background: var(--glass-input-bg, rgba(255, 255, 255, 0.72));
+  border: 1px solid var(--glass-border-subtle);
+}
+.bsh-guest-signup {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 4px 12px rgba(240, 145, 153, 0.28);
+}
+.bsh-guest-link:hover,
+.bsh-guest-signup:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* ==================== 8. 响应式 ==================== */
+@media (max-width: 900px) {
+  :root { --bsh-float-top: 96px; }
+  .bsh-float { width: min(92vw, 344px); }
+  .bsh-pager-demo { width: min(92vw, 560px); }
+}
+
+@media (max-width: 720px) {
+  .bsh-dock { gap: 1px; padding: 5px 6px; bottom: 12px; }
+  .bsh-dock-btn { width: 31px; height: 31px; flex-basis: 31px; font-size: 13.5px; }
+  .bsh-dock-ava { width: 26px; height: 26px; flex-basis: 26px; }
+  .bsh-dock-name, .bsh-dock-sep { display: none; }
+  .bsh-robot { right: 12px; bottom: 66px; }
+  .bsh-robot-bubble { max-width: 190px; font-size: 11.5px; }
+  .bsh-cache-grid { grid-template-columns: repeat(2, 1fr); }
+  .bsh-emoji-grid { grid-template-columns: repeat(3, 1fr); }
+  html.bsh-has-dock .glass-footer { margin-bottom: 72px; }
+}
+
+
+footer.glass-footer#footer[data-bgm-shell-el="1"] {
+  max-width: 1372px !important;
+  width: calc(100% - 48px) !important;
+  margin: 32px auto 96px !important;
+  padding: 26px 32px !important;
+  background: var(--glass-l1-bg, color-mix(in srgb, var(--surface) 86%, transparent)) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid var(--glass-border, var(--hairline)) !important;
+  border-radius: var(--r-2xl, 22px) !important;
+  box-sizing: border-box !important;
+}
+footer.glass-footer#footer[data-bgm-shell-el="1"] .footer-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+}
+footer.glass-footer#footer[data-bgm-shell-el="1"] .footer-bottom {
+  margin-top: 18px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid var(--glass-border-subtle, var(--hairline)) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+
+/* ==================== 4. Phase F1 超合金组件与原站动态弹窗毛玻璃兼容层 ==================== */
+html[data-bgm-alloy-compat="1"] #TB_overlay {
+  background: rgba(9, 11, 16, 0.48) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  opacity: 1 !important;
+}
+html[data-bgm-alloy-compat="1"] #TB_window,
+[data-bgm-alloy-styled="1"]#TB_window {
+  border-radius: 22px !important;
+  background: var(--glass-l3-bg, color-mix(in srgb, var(--surface) 92%, transparent)) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid var(--glass-border, var(--hairline)) !important;
+  box-shadow: var(--glass-popover-shadow, 0 24px 60px rgba(0, 0, 0, 0.35)) !important;
+  color: var(--ink) !important;
+  overflow: hidden !important;
+}
+html[data-bgm-alloy-compat="1"] #TB_title {
+  background: color-mix(in srgb, var(--ink) 5%, transparent) !important;
+  border-bottom: 1px solid var(--hairline) !important;
+  color: var(--ink) !important;
+  padding: 10px 16px !important;
+  height: auto !important;
+}
+html[data-bgm-alloy-compat="1"] #TB_ajaxContent,
+html[data-bgm-alloy-compat="1"] #TB_iframeContent {
+  background: transparent !important;
+  color: var(--ink) !important;
+}
+html[data-bgm-alloy-compat="1"] #cluetip,
+html[data-bgm-alloy-compat="1"] .cluetip,
+[data-bgm-alloy-styled="1"]#cluetip,
+[data-bgm-alloy-styled="1"].ui-dialog {
+  border-radius: 16px !important;
+  background: var(--glass-l3-bg, color-mix(in srgb, var(--surface) 94%, transparent)) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1px solid var(--glass-border, var(--hairline)) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25) !important;
+  color: var(--ink) !important;
+  padding: 10px 14px !important;
+}
+html[data-bgm-alloy-compat="1"] #cluetip-outer,
+html[data-bgm-alloy-compat="1"] #cluetip-inner {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--ink) !important;
+}
+
+
+/* ==================== 5b. 外观偏好设定模态框 (.bsh-pref-dialog · 真液态毛玻璃) ==================== */
+/* 关键：移除全屏遮罩层的 backdrop-filter，避免 Chromium BackdropRoot 阻断弹窗自身的毛玻璃采样 */
+#customizeModal.glass-modal-backdrop {
+  background: rgba(10, 12, 18, 0.16) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#customizeModal .bsh-pref-dialog {
+  width: 100% !important;
+  max-width: 448px !important;
+  padding: 22px 24px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.44) 100%
+  ) !important;
+  backdrop-filter: blur(30px) saturate(200%) url("#lg-bar") !important;
+  -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.78),
+    inset 1.5px 2.5px 0 -1px rgba(255, 255, 255, 0.65),
+    inset -1.5px -2px 0 -1px rgba(255, 255, 255, 0.35),
+    0 28px 68px -12px rgba(15, 23, 42, 0.28),
+    0 6px 20px rgba(15, 23, 42, 0.12) !important;
+  color: var(--ink) !important;
+}
+
+html[data-theme="dark"] #customizeModal .bsh-pref-dialog {
+  background: linear-gradient(
+    145deg,
+    rgba(32, 35, 44, 0.52) 0%,
+    rgba(18, 20, 26, 0.42) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+    inset 1.8px 3px 0 -2px rgba(255, 255, 255, 0.32),
+    inset -2px -2px 0 -2px rgba(255, 255, 255, 0.16),
+    inset 0 -8px 16px -8px rgba(255, 255, 255, 0.08),
+    0 32px 72px -12px rgba(0, 0, 0, 0.62),
+    0 8px 24px rgba(0, 0, 0, 0.36) !important;
+}
+
+.bsh-pref-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent) !important;
+}
+
+.bsh-pref-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.bsh-pref-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 11px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: color-mix(in srgb, var(--accent) 18%, rgba(255, 255, 255, 0.12)) !important;
+  color: var(--accent) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 36%, rgba(255, 255, 255, 0.2)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  flex-shrink: 0 !important;
+}
+
+.bsh-pref-icon svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.bsh-pref-title {
+  font-family: var(--sans) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  color: var(--ink) !important;
+  margin: 0 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.bsh-pref-sub {
+  font-size: 12px !important;
+  color: var(--muted) !important;
+  margin: 2px 0 0 !important;
+  line-height: 1.3 !important;
+}
+
+.bsh-pref-close {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 999px !important;
+  display: grid !important;
+  place-items: center !important;
+  color: var(--muted) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+}
+
+.bsh-pref-close:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: var(--ink) !important;
+}
+
+.bsh-pref-close svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.bsh-pref-body {
+  padding-top: 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+.bsh-pref-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.bsh-pref-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--muted) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* 三段式液态玻璃分段槽 */
+.bsh-seg-group {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+  padding: 4px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.28) !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="dark"] .bsh-seg-group {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28) !important;
+}
+
+.bsh-seg-btn {
+  height: 34px !important;
+  padding: 0 10px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: var(--muted) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+
+.bsh-seg-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.bsh-seg-btn:hover {
+  color: var(--ink) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.bsh-seg-btn.is-selected {
+  background: rgba(255, 255, 255, 0.68) !important;
+  backdrop-filter: blur(12px) url("#lg-thumb") !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: var(--ink) !important;
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 3px 10px rgba(0, 0, 0, 0.10) !important;
+}
+
+html[data-theme="dark"] .bsh-seg-btn.is-selected {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* 3x2 液态毛玻璃色板矩阵 */
+.bsh-swatch-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.bsh-swatch-btn {
+  height: 38px !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  background: rgba(255, 255, 255, 0.34) !important;
+  border: 1px solid rgba(255, 255, 255, 0.42) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+  color: var(--ink) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+
+html[data-theme="dark"] .bsh-swatch-btn {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.bsh-swatch-btn:hover {
+  background: rgba(255, 255, 255, 0.52) !important;
+  transform: translateY(-1px) !important;
+}
+
+html[data-theme="dark"] .bsh-swatch-btn:hover {
+  background: rgba(255, 255, 255, 0.13) !important;
+}
+
+.bsh-swatch-btn.is-selected {
+  background: color-mix(in srgb, var(--accent) 22%, rgba(255, 255, 255, 0.25)) !important;
+  border-color: color-mix(in srgb, var(--accent) 68%, rgba(255, 255, 255, 0.4)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 4px 14px color-mix(in srgb, var(--accent) 22%, transparent) !important;
+  color: var(--ink) !important;
+}
+
+.bsh-swatch-dot {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  flex: 0 0 16px !important;
+  display: grid !important;
+  place-items: center !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+.bsh-swatch-dot svg {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+.bsh-swatch-label {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 液态毛玻璃拨杆开关卡片 */
+.bsh-switch-card {
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.34) !important;
+  border: 1px solid rgba(255, 255, 255, 0.42) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+  overflow: hidden !important;
+}
+
+html[data-theme="dark"] .bsh-switch-card {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.bsh-switch-row {
+  width: 100% !important;
+  padding: 12px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  text-align: left !important;
+  background: transparent !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.bsh-switch-row:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.bsh-switch-divider {
+  height: 1px !important;
+  background: color-mix(in srgb, var(--ink) 10%, transparent) !important;
+  margin: 0 14px !important;
+}
+
+.bsh-switch-text {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+}
+
+.bsh-switch-name {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+
+.bsh-switch-desc {
+  font-size: 11.5px !important;
+  color: var(--muted) !important;
+}
+
+.bsh-switch-track {
+  width: 40px !important;
+  height: 22px !important;
+  border-radius: 999px !important;
+  flex: 0 0 40px !important;
+  background: rgba(120, 125, 136, 0.32) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18) !important;
+  position: relative !important;
+  transition: background 0.18s ease, border-color 0.18s ease !important;
+}
+
+.bsh-switch-track.is-on {
+  background: var(--accent) !important;
+  border-color: color-mix(in srgb, var(--accent) 80%, #ffffff) !important;
+}
+
+.bsh-switch-thumb {
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32) !important;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.bsh-switch-track.is-on .bsh-switch-thumb {
+  transform: translateX(18px) !important;
+}
+
+
+/* ==================== 6. 全局线性玻璃 SVG 图标体系 (.bgm-ico / .panel-icon) ==================== */
+.bgm-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  vertical-align: -0.18em;
+  margin-right: 4px;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.bgm-ico svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 面板与区块标题中的玻璃质感图标徽章 (替代原彩色 Emoji) */
+.panel-header-title h3 .panel-icon,
+.panel-header-title h3 .bgm-ico,
+.prg-header-bar .bgm-ico,
+.cat-icon-badge,
+.side-panel-title .bgm-ico,
+.bch-sec-title .bgm-ico,
+.bch-side-title .bgm-ico {
+  width: 26px !important;
+  height: 26px !important;
+  padding: 5px !important;
+  margin-right: 6px !important;
+  border-radius: 8px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  background: color-mix(in srgb, var(--accent, #d9536f) 14%, rgba(255, 255, 255, 0.06)) !important;
+  border: 1px solid color-mix(in srgb, var(--accent, #d9536f) 28%, rgba(255, 255, 255, 0.14)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+  color: var(--accent, #d9536f) !important;
+  vertical-align: middle !important;
+}
+
+.panel-header-title h3 .panel-icon svg,
+.panel-header-title h3 .bgm-ico svg,
+.prg-header-bar .bgm-ico svg,
+.cat-icon-badge svg {
+  width: 14.5px !important;
+  height: 14.5px !important;
+}

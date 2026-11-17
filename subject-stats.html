@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-accent="pink">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>葬送的芙莉莲 的透视统计 · Bangumi 番组计划</title>
+  <link rel="stylesheet" href="css/bangumi-home-preview.css?v=23" />
+  <link rel="stylesheet" href="css/prg_editorial.css?v=23" />
+  <link rel="stylesheet" href="css/prg_soft.css?v=23" />
+  <link rel="stylesheet" href="css/bangumi-wings.css?v=23" />
+  <link rel="stylesheet" href="css/brand.css?v=23" />
+  <link rel="stylesheet" href="css/topbar-account.css?v=28" />
+  <link rel="stylesheet" href="css/bangumi-subject.css?v=5" />
+  <!-- 条目透视统计页专属样式 (B8 / Page 11) -->
+  <link rel="stylesheet" href="css/bangumi-stats.css?v=1" />
+  <link rel="stylesheet" href="css/bangumi-shell.css?v=4" />
+</head>
+<body>
+  <!-- 1. 动态色散环境背景光晕 (Dynamic Artwork Ambient Mesh) -->
+  <div class="ambient-canvas" id="ambientCanvas" aria-hidden="true">
+    <div class="ambient-orb orb-primary" id="orbPrimary"></div>
+    <div class="ambient-orb orb-secondary" id="orbSecondary"></div>
+    <div class="ambient-orb orb-tertiary" id="orbTertiary"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <!-- 全局轻量提示 Toast -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Margin Liquid Glass SVG 折射滤镜 (#lg-bar & #lg-thumb) -->
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+    <filter id="lg-bar" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P... (line truncated to 2000 chars)
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.008 0.05" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="lg-thumb" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P... (line truncated to 2000 chars)
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.006 0.02" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- ==================== 顶部全局导航栏 (#headerNeue2) ==================== -->
+  <header class="top" id="headerNeue2">
+    <div class="top-left">
+      <a href="index.html" class="brand" title="返回主页预览">
+        <span class="tv" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect class="tv-screen" x="3" y="6.5" width="18" height="13.5" rx="4"/>
+            <path class="tv-antenna" d="m8 2.5 3.5 4m4.5-4-3.5 4"/>
+            <circle class="tv-eye" cx="9.2" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <circle class="tv-eye" cx="14.8" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <path class="tv-mouth" d="M9.8 16.2c1.2.8 3.2.8 4.4 0"/>
+          </svg>
+          <span class="tv-scan" aria-hidden="true"></span>
+        </span>
+        <span class="brand-wordmark">
+          <span class="brand-serif">Bangumi</span>
+          <span class="brand-meta">
+            <span class="brand-meta-en">SUBJECT</span>
+            <span class="brand-meta-cn">条目详情</span>
+          </span>
+        </span>
+      </a>
+
+      <!-- 快速跳转主页与频道 -->
+      <nav class="et nav-et" id="navMenuNeue" aria-label="频道导航栏">
+          <a href="index.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏠 返回主页</a>
+          <a href="subject.html" class="nav-chan" style="color:#fff;background:var(--accent);font-weight:700;">🎬 条目详情</a>
+          <a href="user.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🕰️ 个人时光机</a>
+          <a href="browser.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📊 分类浏览</a>
+          <a href="group.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👥 小组与讨论</a>
+          <a href="search.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔍 全站搜索</a>
+          <a href="mono.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👤 人物频道</a>
+          <a href="rakuen.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🌌 超展开</a>
+          <a href="blog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">✒️ 日志广场</a>
+        <a href="catalog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📑 目录广场</a>
+        <a href="settings.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⚙️ 个人设置</a>
+        <a href="explore.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🧭 探索实验室</a>
+        <a href="notify.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔔 电波提醒</a>
+        <a href="auth.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔑 游客/登录</a>
+          <a href="browser.html?type=anime" class="nav-chan" style="background:var(--accent-faint);">动画</a>
+        <a href="browser.html?type=book" class="nav-chan">书籍</a>
+        <a href="browser.html?type=music" class="nav-chan">音乐</a>
+        <a href="browser.html?type=game" class="nav-chan">游戏</a>
+        <a href="browser.html?type=real" class="nav-chan">三次元</a>
+          <a href="channel.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📺 频道主页</a>
+          <a href="calendar.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📅 每日放送</a>
+          <a href="tag.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏷️ 标签广场</a>
+          <a href="timeline.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⏱️ 时空管理局</a>
+        </nav>
+    </div>
+
+    <!-- 顶部中央搜索栏 -->
+    <form class="search" id="headerSearch" onsubmit="return false;" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-3.5-3.5"/>
+      </svg>
+      <button type="button" class="search-cat-pill">
+        <span>动画</span>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4.5 6 7.5l3-3"/></svg>
+      </button>
+      <input type="search" placeholder="在条目中快速检索..." autocomplete="off" />
+      <kbd>/</kbd>
+    </form>
+
+    <!-- 右侧工具栏 -->
+    <div class="acts">
+      <nav class="et act-et" id="actBar" aria-label="快捷工具栏">
+        <a href="index.html" class="act et-btn" title="查看主页视觉原型">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>主页</span>
+        </a>
+        <button type="button" class="act et-btn" id="btnOpenThemeSettings" onclick="document.getElementById('customizeModal').hidden = false;" title="设置主题">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>外观</span>
+        </button>
+      </nav>
+      <!-- Margin 原版昼夜云朵星辰拟物开关 (.ts) -->
+      <button type="button" class="ts" id="btnThemeToggle" role="switch" aria-label="切换浅色/深色主题" title="切换浅色 / 深色模式">
+        <span class="ts-c" aria-hidden="true"><span class="ts-clouds"></span><span class="ts-stars"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.831... (line truncated to 2000 chars)
+      </button>
+
+      <!-- 36px 纯净圆头像：与主页设计高度一致的个人卡片入口 -->
+      <div class="um-wrap" id="userAvatarWrap">
+        <a href="user.html" class="user in" id="userAvatarBtn" aria-label="进入 少年游 的个人时光机" title="进入 少年游 (UID: 553488) 的个人时光机">
+          <img src="https://lain.bgm.tv/pic/user/l/000/55/34/553488.jpg?r=1697955910&hd=1" alt="少年游" referrerpolicy="no-referrer" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 主内容容器 ==================== -->
+  <main class="page-container" style="max-width: 1420px; margin: 0 auto; padding: 0 24px;">
+
+    <!-- ==================== 1. 条目专属全景顶栏 (#headerSubject) ==================== -->
+    <section class="subject-banner" id="headerSubject">
+      <div class="subject-banner-backdrop" id="subjectBackdrop"></div>
+      <div class="subject-banner-inner">
+        <!-- 标签与排行徽章 + 全品类预设快捷切换条 -->
+        <div class="subject-header-meta">
+          <span class="subject-type-badge" id="subjectTypeBadge">TV 动画</span>
+          <span class="subject-rank-badge" id="subjectRankBadge">Rank #43</span>
+          <div class="banner-category-Readiness-bar" id="bannerCategoryBar" role="tablist" aria-label="透视统计全品类条目切换">
+            <span class="cat-bar-label">透视统计全品类切换:</span>
+            <button type="button" class="preset-pill-btn banner-cat-pill active" data-subject-id="400602">📺 动画·芙莉莲 (7.7w藏/8.52★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="265">🤖 动画·EVA (6.6w藏/8.68★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="253">🎷 动画·星际牛仔 (4.6w藏/9.09★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="305429">📚 书籍·芙莉莲漫画 (7.6k藏/8.04★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="310920">📖 单行本·Vol.1 (180藏/7.97★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="477900">🎵 音乐·晴る (389藏/8.17★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="37141">🎮 游戏·女神异闻录5R (7.5k藏/8.59★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="225581">🎬 日剧·非自然死亡 (5.0k藏/8.37★)</button>
+          </div>
+        </div>
+
+        <!-- 标题行与快捷功能药丸 -->
+        <div class="subject-title-row">
+          <div class="subject-title-group">
+            <h1 class="nameSingle">
+              <span class="title-jp" id="subjectTitleJp">葬送のフリーレン</span>
+              <span class="title-cn" id="subjectTitleCn">葬送的芙莉莲</span>
+            </h1>
+          </div>
+          <div class="subject-header-actions">
+            <button class="action-pill-btn" onclick="navigator.clipboard.writeText(location.href);alert('已复制条目链接！');">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span>分享</span>
+            </button>
+            <button class="action-pill-btn" onclick="alert('已将本条目加入待建目录');">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>加目录</span>
+            </button>
+            <a href="subject-wiki.html?id=400602" class="action-pill-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Wiki</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 一级导航 Tabs (随五大分类/系列单本动态自适应) -->
+        <ul class="subject-nav-tabs" id="subjectNavTabs">
+          <li class="subject-nav-tab-item"><a href="subject.html?id=400602" data-tab="overview">概览</a></li>
+          <li class="subject-nav-tab-item"><a href="subject-ep.html?id=400602" data-tab="episodes">章节 <span class="tab-count">28</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-characters.html?id=400602" data-tab="characters">角色 <span class="tab-count">91</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-persons.html?id=400602" data-tab="persons">制作人员 <span class="tab-count">676</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-comments.html?id=400602" data-tab="comments">吐槽箱 <span class="tab-count">38</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-reviews.html?id=400602&amp;tab=reviews" data-tab="reviews">评论 <span class="tab-count">15</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-reviews.html?id=400602&amp;tab=board" data-tab="board">讨论版 <span class="tab-count">20</span></a></li>
+          <li class="subject-nav-tab-item active"><a href="subject-stats.html?id=400602" class="focus" data-tab="stats">透视 <span class="tab-count">Stats</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-wiki.html?id=400602" data-tab="wiki">维基修订 <span class="tab-count">Wiki</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 条目透视统计主工作区 (/subject/{id}/stats) ==================== -->
+    <div id="main" class="png_bg bst-page-wrap">
+
+      <!-- 2.1 透视视图切换与多维显示控制栏 -->
+      <section class="bst-control-bar" aria-label="透视统计视图与图表控制栏">
+        <div class="bst-view-tabs" id="bstViewModeTabs" role="tablist">
+          <button type="button" class="bst-view-tab is-active" data-act="switch-view" data-view="all">📊 全景透视大盘 (All-in-One)</button>
+          <button type="button" class="bst-view-tab" data-act="switch-view" data-view="trends">📈 四大趋势与群体对比 (#colunmSingle)</button>
+          <button type="button" class="bst-view-tab" data-act="switch-view" data-view="matrix">🧬 六维交叉分层矩阵 (CHART_SETS)</button>
+        </div>
+
+        <div class="bst-toolbar-actions">
+          <div class="bst-tool-group" role="group" aria-label="堆叠柱状图模式">
+            <button type="button" class="bst-tool-btn is-active" data-act="switch-stack" data-stack="count">绝对票数堆叠</button>
+            <button type="button" class="bst-tool-btn" data-act="switch-stack" data-stack="percent">100% 占比归一</button>
+          </div>
+          <button type="button" class="bst-ext-btn" id="bstToggleScoreLineBtn" data-act="toggle-score-line">
+            <span>📉 均分折线: 开启</span>
+          </button>
+          <a href="https://netaba.re/subject/400602" target="_blank" rel="noopener noreferrer" class="bst-ext-btn" id="bstNetabareLink" title="在 Netaba.re 查看外部历史评分观测">
+            <span>🔭 Netaba.re 趋势观测 ↗</span>
+          </a>
+          <button type="button" class="bst-ext-btn" id="bstExportBtn" data-act="export-json">
+            <span>📥 导出统计 JSON</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 2.2 全站用户 vs VIB 核心资深用户 KPI 对照网格 (原生 div.gridStats) -->
+      <section class="bst-kpi-overview-grid" aria-label="全站用户评价与 VIB 核心用户评价概览">
+        <!-- 左卡：全站用户评价 6 维指标 -->
+        <div class="bst-kpi-panel">
+          <div class="bst-kpi-panel-head">
+            <div>
+              <h2 class="bst-kpi-panel-title">
+                <span>🌐 全站用户评价</span>
+                <span class="bst-kpi-panel-sub" id="bstOverallSubTitle">All Bangumiers · 实时汇总</span>
+              </h2>
+            </div>
+            <div class="bst-tenstar-badge" id="bstOverallTenStarBadge" title="传统十星评分制">
+              <span class="bst-stars-glyph">★★★★★★★★★☆</span>
+              <span>8.52 / 10 (神作)</span>
+            </div>
+          </div>
+
+          <div class="gridStats" id="bstOverallGridStats">
+            <div class="item default">
+              <span class="num">77870</span>
+              <span class="desc">收藏</span>
+            </div>
+            <div class="item green">
+              <span class="num">66597</span>
+              <span class="desc">看过</span>
+            </div>
+            <div class="item blue">
+              <span class="num">85.5%</span>
+              <span class="desc">完成率</span>
+            </div>
+            <div class="item orange">
+              <span class="num">8.52</span>
+              <span class="desc">神作</span>
+            </div>
+            <div class="item purple">
+              <span class="num">1.27</span>
+              <span class="desc">标准差</span>
+            </div>
+            <div class="item sky">
+              <span class="num">49514</span>
+              <span class="desc">评分数</span>
+            </div>
+          </div>
+
+          <div class="bst-kpi-Diagnostic-strip" id="bstOverallDiagnostic">
+            <span>📌 评分转化率：<strong>63.6%</strong>（49,514 / 77,870 人已打分）</span>
+            <span>📐 离散度诊断：<strong>标准差 1.27 · 共识度高（口碑稳健）</strong></span>
+          </div>
+        </div>
+
+        <!-- 右卡：VIB 核心资深用户评价 3 维指标 -->
+        <div class="bst-kpi-panel">
+          <div class="bst-kpi-panel-head">
+            <div>
+              <h2 class="bst-kpi-panel-title">
+                <span>🏅 VIB 评价</span>
+                <span class="bst-kpi-panel-sub">Very Important Bangumier</span>
+              </h2>
+            </div>
+            <div class="bst-tenstar-badge" id="bstVibTenStarBadge" title="VIB 资深用户传统十星评分">
+              <span class="bst-stars-glyph">★★★★★★★★☆☆</span>
+              <span>8.26 / 10 (力荐)</span>
+            </div>
+          </div>
+
+          <div class="gridStats bst-vib-grid" id="bstVibGridStats">
+            <div class="item orange">
+              <span class="num">8.26</span>
+              <span class="desc">力荐</span>
+            </div>
+            <div class="item purple">
+              <span class="num">1.15</span>
+              <span class="desc">标准差</span>
+            </div>
+            <div class="item sky">
+              <span class="num">14286</span>
+              <span class="desc">评分数</span>
+            </div>
+          </div>
+
+          <div class="bst-kpi-Diagnostic-strip" id="bstVibDiagnostic">
+            <span>⚖️ VIB vs 全站分差：<span class="bst-delta-pill is-neg">Δ -0.26 分</span></span>
+            <span>🎯 核心样本占比：<strong>28.9%</strong>（资深用户打分更审慎收敛）</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2.3 人群分群去噪重算模拟器 (#bstCohortInspector) -->
+      <section class="bst-simulator-card" id="bstCohortInspector" aria-label="人群分群去噪评分模拟器">
+        <div class="bst-simulator-head">
+          <div class="bst-simulator-title">
+            <span>🧪 人群分群评分去噪模拟器 (Cohort Score Simulator)</span>
+            <small style="font-weight:500;color:var(--fg-3);">基于线上真实分层数据实时重算特定群体的加权均分与传统十星分布</small>
+          </div>
+          <button type="button" class="bst-ext-btn" data-act="reset-simulator">↺ 恢复全量样本</button>
+        </div>
+        <div class="bst-simulator-body">
+          <div class="bst-sim-filters" id="bstSimFilters">
+            <div class="bst-sim-filter-row">
+              <span class="bst-sim-filter-label">分群维度切换：</span>
+              <button type="button" class="bst-sim-chip is-active" data-act="sim-preset" data-preset="all">🌐 全站全量样本</button>
+              <button type="button" class="bst-sim-chip" data-act="sim-preset" data-preset="done_only">✅ 仅看「看过/完成」状态</button>
+              <button type="button" class="bst-sim-chip" data-act="sim-preset" data-preset="no_drop">🛡️ 剔除「抛弃/想看」极端票</button>
+              <button type="button" class="bst-sim-chip" data-act="sim-preset" data-preset="heavy_viewer">📚 阅片量 ≥ 100 部资深读者</button>
+              <button type="button" class="bst-sim-chip" data-act="sim-preset" data-preset="veteran_3y">⏳ 注册满 2 年以上老用户</button>
+              <button type="button" class="bst-sim-chip" data-act="sim-preset" data-preset="vib_only">🏅 仅看 VIB 核心样本</button>
+            </div>
+          </div>
+          <div class="bst-sim-result-box" id="bstSimResultBox">
+            <div class="bst-sim-score-main">
+              <span style="font-size:11.5px;color:var(--fg-3);font-weight:600;" id="bstSimCohortName">当前分群：全站全量样本</span>
+              <div style="display:flex;align-items:baseline;gap:10px;">
+                <span class="bst-sim-score-num" id="bstSimScoreNum">8.52</span>
+                <span class="bst-delta-pill is-pos" id="bstSimDeltaPill">基准 ±0.00</span>
+              </div>
+              <span class="bst-sim-score-stars" id="bstSimStarsText">★★★★★★★★★☆ 8.52 / 10</span>
+            </div>
+            <div class="bst-sim-meta-col" id="bstSimMetaCol">
+              <span>有效样本量：<strong>49,514</strong> 票 (100.0%)</span>
+              <span>分群标准差：<strong>1.27</strong> · 众数：<strong>9★</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 3. Spec Page 11 单栏四大核心统计图表 (#colunmSingle) ==================== -->
+      <div id="colunmSingle" class="bst-single-column" aria-label="四大核心统计图表区域">
+        <!-- 图表 1: 收藏状态分布饼图/环形图 (div#chartCollect.chartWrapper) -->
+        <div class="chartSection" id="sectionChartCollect">
+          <div class="chartSection-head">
+            <div class="chartSection-title-wrap">
+              <h3>🍩 收藏状态分布与评分转化 <small style="font-weight:500;color:var(--fg-3);font-size:12px;">(#chartCollect)</small></h3>
+              <p>五态收藏人数占比与各状态已评分转化率（点击下方图例可开关扇区并重算占比）</p>
+            </div>
+          </div>
+          <div id="chartCollect" class="chartWrapper">
+            <div class="highcharts-legend">
+              <span class="highcharts-legend-item" data-act="toggle-legend" data-chart="collect" data-series="collect"><span class="highcharts-legend-swatch" style="background:#10b981;"></span><span>看过 (66,597)</span></span>
+              <span class="highcharts-legend-item" data-act="toggle-legend" data-chart="collect" data-series="doing"><span class="highcharts-legend-swatch" style="background:#38bdf8;"></span><span>在看 (13,689)</span></span>
+              <span class="highcharts-legend-item" data-act="toggle-legend" data-chart="collect" data-series="wish"><span class="highcharts-legend-swatch" style="background:#f472b6;"></span><span>想看 (11,148)</span></span>
+              <span class="highcharts-legend-item" data-act="toggle-legend" data-chart="collect" data-series="on_hold"><span class="highcharts-legend-swatch" style="background:#f59e0b;"></span><span>搁置 (2,835)</span></span>
+              <span class="highcharts-legend-item" data-act="toggle-legend" data-chart="collect" data-series="dropped"><span class="highcharts-legend-swatch" style="background:#94a3b8;"></span><span>抛弃 (1,125)</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 图表 2: 各状态人数随时间变化趋势折线图 (div#chartInterest.chartWrapper) -->
+        <div class="chartSection" id="sectionChartInterest">
+          <div class="chartSection-head">
+            <div class="chartSection-title-wrap">
+              <h3>📈 收藏状态人数随时间变化趋势 <small style="font-weight:500;color:var(--fg-3);font-size:12px;">(#chartInterest)</small></h3>
+              <p>开播预热 → 热播期 → 完结长尾的五态人数演化轨迹</p>
+            </div>
+            <div class="bst-zoom-group" data-chart="interest" aria-label="时间跨度缩放">
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="interest" data-range="3">1M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="interest" data-range="5">3M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="interest" data-range="8">6M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="interest" data-range="10">1Y</button>
+              <button type="button" class="bst-zoom-btn is-active" data-act="zoom-range" data-target="interest" data-range="12">ALL</button>
+            </div>
+          </div>
+          <div id="chartInterest" class="chartWrapper"></div>
+        </div>
+
+        <!-- 图表 3: 战力/热度指数走势图 (div#chartForce.chartWrapper) -->
+        <div class="chartSection" id="sectionChartForce">
+          <div class="chartSection-head">
+            <div class="chartSection-title-wrap">
+              <h3>🔥 战力/热度指数与全站均分走势 <small style="font-weight:500;color:var(--fg-3);font-size:12px;">(#chartForce)</small></h3>
+              <p>条目讨论战力指数 (Force Index) 与 10 分制均分双轴演化曲线</p>
+            </div>
+            <div class="bst-zoom-group" data-chart="force" aria-label="时间跨度缩放">
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="force" data-range="3">1M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="force" data-range="5">3M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="force" data-range="8">6M</button>
+              <button type="button" class="bst-zoom-btn" data-act="zoom-range" data-target="force" data-range="10">1Y</button>
+              <button type="button" class="bst-zoom-btn is-active" data-act="zoom-range" data-target="force" data-range="12">ALL</button>
+            </div>
+          </div>
+          <div id="chartForce" class="chartWrapper"></div>
+        </div>
+
+        <!-- 图表 4: 不同群体评分分布对比 (div#chartVib.chartWrapper) -->
+        <div class="chartSection" id="sectionChartVib">
+          <div class="chartSection-head">
+            <div class="chartSection-title-wrap">
+              <h3>⚖️ 不同群体评分分布对比 (全站 vs VIB) <small style="font-weight:500;color:var(--fg-3);font-size:12px;">(#chartVib)</small></h3>
+              <p>10★ → 1★ 全站用户与 VIB 核心资深用户的评分占比镜像对比及分差检视</p>
+            </div>
+            <div class="bst-zoom-group" aria-label="对比指标切换">
+              <button type="button" class="bst-zoom-btn is-active" data-act="vib-metric" data-metric="pct">占比 (%)</button>
+              <button type="button" class="bst-zoom-btn" data-act="vib-metric" data-metric="count">票数 (人)</button>
+            </div>
+          </div>
+          <div id="chartVib" class="chartWrapper"></div>
+        </div>
+      </div>
+
+      <!-- ==================== 4. 线上 r771 原生双栏六维交叉评分分布矩阵 (.columns.columns-full) ==================== -->
+      <section id="bstMatrixSection" aria-label="六维交叉评分分布矩阵">
+        <div class="bst-matrix-section-header">
+          <h2>🧬 六维评分分布深度矩阵 (bgm.tv CHART_SETS 原生多维透视)</h2>
+          <span style="font-size:12px;color:var(--fg-3);">点击任意图例胶囊 (.highcharts-legend-item) 可过滤特定子群体并实时重算均分折线</span>
+        </div>
+
+        <div class="columns columns-full bst-columns-full clearit">
+          <!-- 左栏 #columnInSubjectA -->
+          <div id="columnInSubjectA" class="column">
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">全站用户评价 <small>按收藏状态 (想看/看过/在看/搁置/抛弃) 10★→1★ 分布</small></h2>
+              <div id="chartCollectInterestType" class="bst-chart-canvas"></div>
+            </div>
+
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">放送时间分布 <small id="bstAirdateSubtitle">统计周期：2023-09-29 ~ 2024-03-22 / Beta</small></h2>
+              <div id="chartCollectAirdate" class="bst-chart-canvas"></div>
+            </div>
+
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">用户收藏量分布 <small>基于用户「看过」条目总量 (1 ~ 1000+ 部) 8 档分层</small></h2>
+              <div id="chartCollectTotal" class="bst-chart-canvas"></div>
+            </div>
+          </div>
+
+          <!-- 右栏 #columnInSubjectB -->
+          <div id="columnInSubjectB" class="column">
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">VIB 评价 <small>Very Important Bangumier 10★→1★ 独立分布</small></h2>
+              <div id="chartVIB" class="bst-chart-canvas"></div>
+            </div>
+
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">用户注册时间 <small>按注册时长 (10天 ~ &gt;3年) 7 档资历分层与均分走势</small></h2>
+              <div id="chartRegdate" class="bst-chart-canvas"></div>
+            </div>
+
+            <div class="bst-matrix-card">
+              <h2 class="subtitle">用户评价时间 <small>注册 X 天内完成评分的分布（防刷分与新老用户沉淀透视）</small></h2>
+              <div id="chartRelativeRegdate" class="bst-chart-canvas"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 浮动交互 Tooltip -->
+    <div id="bstChartTooltip" class="bst-chart-tooltip" role="tooltip" aria-hidden="true"></div>
+  </main>
+
+  <!-- ==================== 个性化外观设置模态窗 (#customizeModal) ==================== -->
+  <div class="glass-modal-backdrop" id="customizeModal" hidden>
+    <div class="frosted-modal-dialog" role="dialog" aria-labelledby="customizeModalTitle">
+      <header class="modal-head">
+        <div>
+          <span class="modal-kicker">SUBJECT AMBIENT ENGINE</span>
+          <h3 id="customizeModalTitle">✨ 外观模式与主题强调色设置</h3>
+        </div>
+        <button type="button" class="ep-pop-close" onclick="document.getElementById('customizeModal').hidden = true;">✕</button>
+      </header>
+      <div class="modal-body">
+        <div class="form-block">
+          <label class="form-label">光影模式 (Theme Mode)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.theme='light';this.classList.add('is-selected');this.nextElementSibling.classList.remove('is-selected');">☀️ 流光浅色 (宣纸白毛玻璃)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.theme='dark';this.classList.add('is-selected');this.previousElementSibling.classList.remove('is-selected');">🌙 曜石深色 (午夜霓虹玻璃)</button>
+          </div>
+        </div>
+        <div class="form-block">
+          <label class="form-label">品牌强调色 (Accent Color)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.accent='pink';">🌸 番组珊瑚粉 (#F09199)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='blue';">💎 晴空湛蓝 (#3B82F6)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='amber';">🍊 琥珀暖金 (#F59E0B)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='emerald';">🌿 翡翠薄荷 (#10B981)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 极简毛玻璃页脚 (#footer) ==================== -->
+  <footer class="glass-footer" id="footer">
+    <div class="footer-bottom" style="display:flex;justify-content:space-between;align-items:center;padding:24px 0;">
+      <span>© 2008-2026 Bangumi (a.k.a. Chobits) · Subject Perspective Statistics Prototype (B8 / Page 11)</span>
+      <span>
+        <a href="index.html" style="color:var(--accent);text-decoration:none;font-weight:700;margin-right:16px;">🏠 返回主页原型 (index.html)</a>
+        <span>Ambient Glass & Oil-UI Architecture</span>
+      </span>
+    </div>
+  </footer>
+
+  <script src="js/bangumi-stats-data.js?v=1"></script>
+  <script src="js/bangumi-stats.js?v=1"></script>
+  <script src="js/bangumi-shell.js?v=6"></script>
+</body>
+</html>

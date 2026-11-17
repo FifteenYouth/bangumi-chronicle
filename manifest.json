@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Bangumi Chronicle · 番组计划流光毛玻璃",
+  "short_name": "Bangumi Chronicle",
+  "version": "0.1.0",
+  "description": "为 Bangumi 番组计划（bgm.tv / bangumi.tv / chii.in）注入 Margin 流光毛玻璃设计系统与全站沉浸重排。",
+  "minimum_chrome_version": "114",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Bangumi Chronicle 设置",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://bgm.tv/*", "*://bangumi.tv/*", "*://chii.in/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/*", "assets/*"],
+      "matches": ["*://bgm.tv/*", "*://bangumi.tv/*", "*://chii.in/*"]
+    }
+  ]
+}

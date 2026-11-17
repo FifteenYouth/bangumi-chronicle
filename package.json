@@ -1,0 +1,19 @@
+{
+  "name": "bangumi-chronicle-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bangumi 番组计划流光毛玻璃设计系统 · Chrome MV3 扩展",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "test:proto": "python docs/check_full_site_f1.py && python docs/check_shell_consistency.py",
+    "test:extractors": "node test-phase-b-extractors.mjs",
+    "test:dom": "node test-full-29-pages.mjs",
+    "test": "node test-phase-b-extractors.mjs && node test-full-29-pages.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

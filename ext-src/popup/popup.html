@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-accent="pink">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bangumi Chronicle</title>
+  <style>
+    :root {
+      --canvas: #f5f4f1;
+      --surface: #ffffff;
+      --ink: #17181a;
+      --muted: #5f6167;
+      --faint: #8a8c93;
+      --line: rgba(23, 24, 26, 0.10);
+      --chip: rgba(23, 24, 26, 0.05);
+      --chip-hover: rgba(23, 24, 26, 0.09);
+      --accent: #d9536f;
+      --accent-soft: rgba(217, 83, 111, 0.12);
+      --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    html[data-theme="dark"] {
+      --canvas: #111112;
+      --surface: #1a1a1c;
+      --ink: #ededee;
+      --muted: #b0b1b6;
+      --faint: #7c7e85;
+      --line: rgba(255, 255, 255, 0.10);
+      --chip: rgba(255, 255, 255, 0.06);
+      --chip-hover: rgba(255, 255, 255, 0.11);
+    }
+
+    html[data-accent="pink"] { --accent: #d9536f; --accent-soft: rgba(217, 83, 111, 0.14); }
+    html[data-accent="blue"] { --accent: #2563eb; --accent-soft: rgba(37, 99, 235, 0.14); }
+    html[data-accent="amber"] { --accent: #d97706; --accent-soft: rgba(217, 119, 6, 0.14); }
+    html[data-accent="emerald"] { --accent: #059669; --accent-soft: rgba(5, 150, 105, 0.14); }
+    html[data-accent="violet"] { --accent: #7c3aed; --accent-soft: rgba(124, 58, 237, 0.14); }
+    html[data-accent="slate"] { --accent: #475569; --accent-soft: rgba(71, 85, 105, 0.16); }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 344px;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 12.5px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 2px 8px var(--accent-soft);
+      flex: none;
+    }
+
+    .brand-meta { min-width: 0; }
+    .brand-title { font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+    .brand-sub { font-size: 11px; color: var(--muted); }
+
+    .ver {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--faint);
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: var(--chip);
+    }
+
+    .card {
+      margin: 10px 12px;
+      padding: 12px;
+      border-radius: 13px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .master-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .master-title { font-size: 13px; font-weight: 700; }
+    .master-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .switch {
+      position: relative;
+      display: inline-flex;
+      width: 40px;
+      height: 22px;
+      flex: none;
+      cursor: pointer;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--chip-hover);
+      border: 1px solid var(--line);
+      transition: background 180ms ease, border-color 180ms ease;
+      position: relative;
+    }
+
+    .slider::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+      transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .switch input:checked + .slider {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .switch input:checked + .slider::after {
+      transform: translateX(18px);
+    }
+
+    .body-panel.is-paused {
+      opacity: 0.54;
+    }
+
+    .sec-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 8px;
+    }
+
+    .seg {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .seg-btn {
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--muted);
+      border-radius: 9px;
+      padding: 7px 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .seg-btn:hover { background: var(--chip-hover); color: var(--ink); }
+
+    .seg-btn[aria-pressed="true"] {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .accent-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .accent-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .accent-pill:hover { background: var(--chip-hover); }
+
+    .accent-pill[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex: none;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+    }
+
+    .toggle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .toggle-name { font-size: 12px; font-weight: 600; }
+    .toggle-hint { font-size: 10.5px; color: var(--muted); }
+
+    .footer {
+      padding: 4px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: var(--faint);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand-mark">B</div>
+    <div class="brand-meta">
+      <div class="brand-title">Bangumi Chronicle</div>
+      <div class="brand-sub" id="statusSub">流光毛玻璃已启用</div>
+    </div>
+    <span class="ver" id="verTag">v0.1.0</span>
+  </header>
+
+  <section class="card">
+    <div class="master-row">
+      <div>
+        <div class="master-title">启用全站重排</div>
+        <div class="master-desc">作用于 bgm.tv / bangumi.tv / chii.in</div>
+      </div>
+      <label class="switch" aria-label="启用或暂停 Bangumi Chronicle">
+        <input type="checkbox" id="enabledToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <div class="body-panel" id="bodyPanel">
+    <section class="card">
+      <div class="sec-label">视觉主题</div>
+      <div class="seg" role="group" aria-label="视觉主题">
+        <button type="button" class="seg-btn" data-theme-choice="light">流光浅色</button>
+        <button type="button" class="seg-btn" data-theme-choice="dark">曜石深色</button>
+        <button type="button" class="seg-btn" data-theme-choice="auto">跟随系统</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-label">品牌强调色（6 色）</div>
+      <div class="accent-grid" id="accentGrid">
+        <button type="button" class="accent-pill" data-accent-choice="pink">
+          <span class="swatch" style="background:#d9536f"></span><span>珊瑚粉</span>
+        </button>
+        <button type="button" class="accent-pill" data-accent-choice="blue">
+          <span class="swatch" style="background:#2563eb"></span><span>晴空蓝</span>
+        </button>
+        <button type="button" class="accent-pill" data-accent-choice="amber">
+          <span class="swatch" style="background:#d97706"></span><span>琥珀金</span>
+        </button>
+        <button type="button" class="accent-pill" data-accent-choice="emerald">
+          <span class="swatch" style="background:#059669"></span><span>翡翠绿</span>
+        </button>
+        <button type="button" class="accent-pill" data-accent-choice="violet">
+          <span class="swatch" style="background:#7c3aed"></span><span>星云紫</span>
+        </button>
+        <button type="button" class="accent-pill" data-accent-choice="slate">
+          <span class="swatch" style="background:#475569"></span><span>曜石灰</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-label">增强与兼容</div>
+      <div class="toggle-list">
+        <div class="toggle-item">
+          <div>
+            <div class="toggle-name">高清封面自动升格</div>
+            <div class="toggle-hint">自动提升条目与角色封面分辨率</div>
+          </div>
+          <label class="switch" aria-label="高清封面自动升格">
+            <input type="checkbox" data-setting-key="hdCovers" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div>
+            <div class="toggle-name">超合金兼容模式</div>
+            <div class="toggle-hint">保留原站组件挂载点，适配第三方脚本</div>
+          </div>
+          <label class="switch" aria-label="超合金兼容模式">
+            <input type="checkbox" data-setting-key="alloyCompat" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <span>Margin Liquid Glass · MV3</span>
+    <span>即时同步生效</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

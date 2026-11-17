@@ -1,0 +1,941 @@
+/* ============================================================================
+   C2 · P15 每日放送日历页 (/calendar) — Editorial Liquid Glass 样式表
+   ============================================================================ */
+
+.bcal-page-body {
+  min-height: 100vh;
+}
+
+.bcal-main-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px 24px 56px;
+}
+
+/* ---------- 1. Hero 头部与工具条 (#header) ---------- */
+.bcal-hero-shell {
+  position: relative;
+  border-radius: 26px;
+  padding: 24px 26px 20px;
+  margin-bottom: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  overflow: hidden;
+}
+
+.bcal-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(640px 220px at 8% -10%, rgba(240, 145, 153, 0.22), transparent 68%),
+    radial-gradient(520px 200px at 94% 10%, rgba(59, 130, 246, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.bcal-hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.bcal-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.bcal-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.bcal-kicker-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent, #f09199), #fb7185);
+  box-shadow: 0 6px 14px rgba(240, 145, 153, 0.28);
+}
+
+.bcal-kicker-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.bcal-main-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.bcal-main-title small.blue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #3b82f6;
+  margin-left: 8px;
+}
+
+.bcal-summary-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.bcal-tip-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: #334155;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.bcal-tip-pill strong {
+  color: var(--accent, #f09199);
+  font-weight: 800;
+}
+
+.bcal-kpi-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bcal-kpi-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  background: rgba(248, 250, 252, 0.76);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.bcal-kpi-chip b {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* ---------- 2. 工具条 (星期聚焦 / 过滤 / 视图模式) ---------- */
+.bcal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  flex-wrap: wrap;
+}
+
+.bcal-day-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bcal-day-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.65);
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.bcal-day-tab:hover {
+  border-color: var(--accent, #f09199);
+  color: var(--accent, #f09199);
+  transform: translateY(-1px);
+}
+
+.bcal-day-tab.is-active {
+  background: var(--accent, #f09199);
+  border-color: var(--accent, #f09199);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(240, 145, 153, 0.28);
+}
+
+.bcal-day-tab.is-today-tab:not(.is-active) {
+  border-color: rgba(240, 145, 153, 0.55);
+  color: #e11d48;
+  background: rgba(255, 241, 242, 0.85);
+}
+
+.bcal-tab-count {
+  font-size: 11px;
+  opacity: 0.82;
+}
+
+.bcal-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bcal-filter-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bcal-filter-box svg {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.bcal-filter-box input {
+  width: 178px;
+  padding: 6px 12px 6px 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.78);
+  color: #0f172a;
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.18s ease, width 0.18s ease;
+}
+
+.bcal-filter-box input:focus {
+  width: 220px;
+  border-color: var(--accent, #f09199);
+}
+
+.bcal-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: rgba(255, 255, 255, 0.68);
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.bcal-toggle-pill:hover {
+  border-color: var(--accent, #f09199);
+}
+
+.bcal-toggle-pill.is-active {
+  background: rgba(240, 145, 153, 0.16);
+  border-color: var(--accent, #f09199);
+  color: #be123c;
+}
+
+.bcal-pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.bcal-view-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.bcal-view-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.bcal-view-btn.is-active {
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+}
+
+/* ---------- 3. 7 列放送海报墙 (div.BgmCalendar > ul.large.clearit) ---------- */
+.bcal-columns {
+  display: block;
+}
+
+.bcal-single-col {
+  width: 100%;
+}
+
+.BgmCalendar > ul.large {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: start;
+}
+
+.BgmCalendar > ul.large.is-single-day {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.BgmCalendar li.week {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.BgmCalendar li.week.is-today {
+  border-color: rgba(240, 145, 153, 0.68);
+  box-shadow: 0 16px 36px rgba(240, 145, 153, 0.18), 0 0 0 1px rgba(240, 145, 153, 0.28);
+}
+
+.BgmCalendar li.week dl {
+  margin: 0;
+}
+
+.BgmCalendar li.week dt {
+  padding: 13px 12px 11px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(248, 250, 252, 0.55));
+}
+
+.BgmCalendar li.week.is-today dt {
+  background: linear-gradient(135deg, rgba(240, 145, 153, 0.22), rgba(251, 113, 133, 0.1));
+}
+
+.BgmCalendar li.week dt h3 {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.bcal-dt-en {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.bcal-today-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent, #f09199);
+}
+
+.bcal-dt-meta {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.BgmCalendar li.week dd {
+  margin: 0;
+  padding: 10px;
+}
+
+.BgmCalendar ul.coverList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.BgmCalendar ul.large.is-single-day ul.coverList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.BgmCalendar ul.coverList > li.clearit {
+  position: relative;
+  min-height: 220px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.BgmCalendar ul.coverList > li.clearit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.2);
+}
+
+.BgmCalendar ul.coverList > li.clearit.is-watching {
+  box-shadow: 0 0 0 2px var(--accent, #f09199), 0 10px 22px rgba(240, 145, 153, 0.24);
+}
+
+.BgmCalendar ul.coverList > li.clearit.is-no-cover {
+  background: linear-gradient(145deg, #334155, #1e293b);
+}
+
+.bcal-card-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 8px 0;
+}
+
+.bcal-time-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.66);
+  backdrop-filter: blur(8px);
+}
+
+.bcal-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fde68a;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.bcal-watch-pill {
+  padding: 3px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(15, 23, 42, 0.66);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.bcal-watch-pill.is-on {
+  background: var(--accent, #f09199);
+  border-color: transparent;
+}
+
+.BgmCalendar ul.coverList div.info_bg {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 28px 10px 9px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.78) 42%, rgba(15, 23, 42, 0.94) 100%);
+}
+
+.BgmCalendar ul.coverList div.info p {
+  margin: 0;
+  line-height: 1.32;
+}
+
+.BgmCalendar ul.coverList div.info p + p {
+  margin-top: 2px;
+}
+
+.BgmCalendar ul.coverList div.info a.nav {
+  color: #fff;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.BgmCalendar ul.coverList div.info a.nav:hover {
+  color: #fda4af;
+}
+
+.BgmCalendar ul.coverList div.info small em {
+  color: rgba(226, 232, 240, 0.8);
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bcal-card-foot {
+  margin-top: 7px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.bcal-ep-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.bcal-ep-label strong {
+  color: #fff;
+}
+
+.bcal-card-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bcal-mini-btn {
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.bcal-mini-btn:hover {
+  background: var(--accent, #f09199);
+  border-color: transparent;
+}
+
+/* ---------- 4. 文字列表模式 + 进度格 ---------- */
+.bcal-list-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bcal-list-day-card {
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(20px) saturate(150%);
+  overflow: hidden;
+}
+
+.bcal-list-day-card.is-today {
+  border-color: rgba(240, 145, 153, 0.65);
+}
+
+.bcal-list-day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(248, 250, 252, 0.6);
+}
+
+.bcal-list-day-card.is-today .bcal-list-day-head {
+  background: linear-gradient(90deg, rgba(240, 145, 153, 0.2), rgba(248, 250, 252, 0.45));
+}
+
+.bcal-list-day-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bcal-list-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.bcal-list-row {
+  display: grid;
+  grid-template-columns: 72px 52px minmax(200px, 1.3fr) minmax(180px, 1fr) minmax(220px, 1.2fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  transition: background 0.16s ease;
+}
+
+.bcal-list-row:last-child {
+  border-bottom: none;
+}
+
+.bcal-list-row:hover {
+  background: rgba(240, 145, 153, 0.06);
+}
+
+.bcal-row-time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  padding: 5px 8px;
+  border-radius: 10px;
+  text-align: center;
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.bcal-row-thumb {
+  width: 52px;
+  height: 72px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.bcal-row-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bcal-row-info {
+  min-width: 0;
+}
+
+.bcal-row-title {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+  text-decoration: none;
+  margin-bottom: 3px;
+}
+
+.bcal-row-title:hover {
+  color: var(--accent, #f09199);
+}
+
+.bcal-row-orig {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bcal-row-submeta {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 传统十星 + 数字评分 */
+.bcal-stars-ten {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bcal-stars-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.bcal-stars-glyphs {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.bcal-stars-num {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.bcal-stars-votes {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 交互式进度格 */
+.bcal-ep-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bcal-ep-caption {
+  font-size: 11.5px;
+  color: #475569;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bcal-ep-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.bcal-ep-cell {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.72);
+  color: #64748b;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.14s ease;
+}
+
+.bcal-ep-cell.is-aired {
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+}
+
+.bcal-ep-cell.is-watched {
+  border-color: var(--accent, #f09199);
+  background: var(--accent, #f09199);
+  color: #fff;
+}
+
+.bcal-ep-cell.is-unaired {
+  opacity: 0.45;
+  border-style: dashed;
+}
+
+.bcal-ep-cell:hover {
+  transform: scale(1.1);
+}
+
+.bcal-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bcal-action-btn {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.8);
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.bcal-action-btn:hover {
+  border-color: var(--accent, #f09199);
+  color: var(--accent, #f09199);
+}
+
+.bcal-action-btn.is-on {
+  background: var(--accent, #f09199);
+  border-color: transparent;
+  color: #fff;
+}
+
+.bcal-empty-state {
+  padding: 56px 24px;
+  text-align: center;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  color: #475569;
+  font-size: 14px;
+}
+
+/* ---------- 5. 深色模式适配 ---------- */
+html[data-theme="dark"] .bcal-hero-shell,
+html[data-theme="dark"] .BgmCalendar li.week,
+html[data-theme="dark"] .bcal-list-day-card,
+html[data-theme="dark"] .bcal-empty-state {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #e2e8f0;
+}
+
+html[data-theme="dark"] .bcal-main-title,
+html[data-theme="dark"] .BgmCalendar li.week dt h3,
+html[data-theme="dark"] .bcal-list-day-head h3,
+html[data-theme="dark"] .bcal-row-title,
+html[data-theme="dark"] .bcal-stars-num,
+html[data-theme="dark"] .bcal-kpi-chip b {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .bcal-kicker-sub,
+html[data-theme="dark"] .bcal-dt-en,
+html[data-theme="dark"] .bcal-dt-meta,
+html[data-theme="dark"] .bcal-row-orig,
+html[data-theme="dark"] .bcal-row-submeta,
+html[data-theme="dark"] .bcal-stars-votes,
+html[data-theme="dark"] .bcal-ep-caption {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .BgmCalendar li.week dt,
+html[data-theme="dark"] .bcal-list-day-head {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+html[data-theme="dark"] .bcal-day-tab,
+html[data-theme="dark"] .bcal-toggle-pill,
+html[data-theme="dark"] .bcal-tip-pill,
+html[data-theme="dark"] .bcal-kpi-chip,
+html[data-theme="dark"] .bcal-filter-box input,
+html[data-theme="dark"] .bcal-action-btn,
+html[data-theme="dark"] .bcal-ep-cell {
+  background: rgba(30, 41, 59, 0.78);
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #e2e8f0;
+}
+
+html[data-theme="dark"] .bcal-view-switch {
+  background: rgba(30, 41, 59, 0.9);
+}
+
+html[data-theme="dark"] .bcal-view-btn.is-active {
+  background: rgba(240, 145, 153, 0.25);
+  color: #fff;
+}
+
+html[data-theme="dark"] .bcal-ep-cell.is-watched {
+  background: var(--accent, #f09199);
+  color: #fff;
+}
+
+/* ---------- 6. 响应式断点 ---------- */
+@media (max-width: 1260px) {
+  .BgmCalendar > ul.large {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .BgmCalendar > ul.large {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bcal-list-row {
+    grid-template-columns: 64px 48px 1fr;
+  }
+  .bcal-stars-ten,
+  .bcal-ep-box,
+  .bcal-row-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .bcal-main-container {
+    padding: 14px 12px 44px;
+  }
+  .BgmCalendar > ul.large {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bcal-summary-wrap {
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.zip
+.DS_Store
+%SystemDrive%/
+archive/
+docs/
+data/
+BANGUMI_UI_BEAUTIFY_SPEC.md
+patch_subject_css.py
+_*.png

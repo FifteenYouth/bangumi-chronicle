@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-theme-color="pink">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>超展开 · Bangumi 话题聚合阅读器 (Rakuen)</title>
+  <link rel="stylesheet" href="css/bangumi-rakuen.css?v=1" />
+  <link rel="stylesheet" href="css/bangumi-shell.css?v=4" />
+</head>
+<body class="bangumi rakuen brm-outer" data-rakuen-frame="outer">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <div id="container" class="brm-container">
+    <!-- 1. 左侧固定窄边栏 #rakuenHeader -->
+    <aside id="rakuenHeader" aria-label="超展开频道与个人快捷栏">
+      <div class="brm-rail-top">
+        <a href="rakuen.html" class="brm-brand-badge" title="超展开首页" data-brm-act="go-home">超</a>
+        <a href="blog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">✒️ 日志广场</a>
+        <a href="catalog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📑 目录广场</a>
+        <a href="settings.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⚙️ 个人设置</a>
+        <a href="explore.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🧭 探索实验室</a>
+        <a href="notify.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔔 电波提醒</a>
+        <a href="auth.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔑 游客/登录</a>
+
+        <div class="header_nav">
+          <a href="user.html?id=553488" title="少年游 · 时光机">
+            <img class="brm-rail-avatar" src="https://lain.bgm.tv/pic/user/l/000/55/34/553488.jpg?r=1697955910&hd=1" alt="少年游" referrerpolicy="no-referrer" />
+          </a>
+          <button type="button" class="brm-rail-icon-btn ico_notify" id="brmNotifyBtn" data-brm-act="notify" title="电波提醒（3 条未读）">
+            🔔<span class="brm-rail-dot"></span>
+          </button>
+          <button type="button" class="brm-rail-icon-btn ico_pm" id="brmPmBtn" data-brm-act="pm" title="站内短信">✉️</button>
+          <button type="button" class="brm-rail-icon-btn" id="btnThemeToggle" data-brm-act="toggle-theme" title="切换昼夜光影主题">🌓</button>
+          <button type="button" class="brm-rail-icon-btn ico_settings" id="brmCustomizeBtn" data-brm-act="open-customize" title="全局外观 / 超合金设置">⚙️</button>
+        </div>
+
+        <ul class="rakuen_nav" id="brmChannelNav" aria-label="超展开位面切换">
+          <li>
+            <a href="#channel=global" class="focus" data-brm-channel="global" title="全局聚合">
+              <img src="https://bgm.tv/img/bangumi/eden_global_s.jpg" alt="全局" referrerpolicy="no-referrer" />
+              <span>全局</span>
+            </a>
+          </li>
+          <li>
+            <a href="#channel=new_bangumi" data-brm-channel="new_bangumi" title="新番乐园">
+              <img src="https://lain.bgm.tv/pic/eden/icon/m/000/00/00/1.jpg" alt="新番" referrerpolicy="no-referrer" />
+              <span>新番</span>
+            </a>
+          </li>
+          <li>
+            <a href="#channel=tokei" data-brm-channel="tokei" title="etokei 绘时计">
+              <img src="https://lain.bgm.tv/pic/eden/icon/m/000/00/00/4.jpg" alt="绘时计" referrerpolicy="no-referrer" />
+              <span>绘时计</span>
+            </a>
+          </li>
+          <li>
+            <a href="#channel=classical_bangumi" data-brm-channel="classical_bangumi" title="经典动画">
+              <img src="https://lain.bgm.tv/pic/eden/icon/m/000/00/00/2.jpg" alt="经典" referrerpolicy="no-referrer" />
+              <span>经典</span>
+            </a>
+          </li>
+          <li>
+            <a href="#channel=doujin" data-brm-channel="doujin" title="天窗联盟">
+              <img src="https://lain.bgm.tv/pic/eden/icon/m/000/00/00/5.jpg" alt="天窗" referrerpolicy="no-referrer" />
+              <span>天窗</span>
+            </a>
+          </li>
+          <li>
+            <a href="#channel=pvc" data-brm-channel="pvc" title="1/8 位面">
+              <img src="https://lain.bgm.tv/pic/eden/icon/m/000/00/00/3.jpg" alt="手办" referrerpolicy="no-referrer" />
+              <span>手办</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="brm-rail-bottom">
+        <div class="brm-rail-mini-links">
+          <a href="group.html" class="brm-rail-mini-link" title="小组广场">小组</a>
+          <a href="mono.html" class="brm-rail-mini-link" title="人物频道">人物</a>
+          <a href="timeline.html" class="brm-rail-mini-link" title="时空管理局">时间线</a>
+        </div>
+        <h1><a href="index.html" class="logo" title="返回 Bangumi 主站">返回主站</a></h1>
+      </div>
+    </aside>
+
+    <!-- 2. 中间话题列表帧 iframe#left.topiclist -->
+    <div id="listFrameWrapper" class="brm-list-wrap">
+      <iframe id="left" name="listFrame" class="topiclist" src="rakuen-topiclist.html" title="超展开话题列表"></iframe>
+    </div>
+
+    <!-- 3. 右侧阅读面板 div#right.rakuenContent > iframe#contentFrame.content -->
+    <section id="right" class="rakuenContent" aria-label="超展开话题阅读窗">
+      <div class="brm-reader-bar">
+        <div class="brm-reader-bar-left">
+          <a href="javascript:void(0)" id="close_content" data-brm-act="close-reader" title="关闭当前话题，回到超展开主页">×</a>
+          <span class="brm-reader-pill" id="brmReaderPill">🌌 超展开首页 · 点击左侧任一话题即可在此阅读</span>
+        </div>
+        <div class="brm-reader-bar-right">
+          <button type="button" class="brm-tool-btn" id="brmToggleFullBtn" data-brm-act="toggle-fullscreen" title="折叠/展开左侧列表">⛶ 专注阅读</button>
+          <a href="rakuen-home.html" target="_blank" rel="noopener" class="brm-tool-btn" id="brmStandaloneLink">↗ 独立页</a>
+          <a href="https://bgm.tv/rakuen" target="_blank" rel="noopener" class="brm-tool-btn" id="brmOrigLink">原站 ↗</a>
+        </div>
+      </div>
+      <iframe id="contentFrame" name="contentFrame" class="content" src="rakuen-home.html" title="超展开话题详情阅读窗"></iframe>
+    </section>
+  </div>
+
+  <footer id="footer" hidden></footer>
+  <script src="js/bangumi-rakuen-data.js?v=1"></script>
+  <script src="js/bangumi-rakuen.js?v=3"></script>
+  <script src="js/bangumi-shell.js?v=6"></script>
+</body>
+</html>

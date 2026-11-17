@@ -1,0 +1,930 @@
+/* ==========================================================================
+   bangumi-explore.css · Page 29: 维基人 (/wiki) · MAGI 问答 (/magi) · Dollars 聊天室 (/dollars)
+   Editorial Liquid Glass Design System · Prefix: bex-
+   ========================================================================== */
+
+:root,
+html[data-theme="light"] {
+  --bex-surface: rgba(255, 255, 255, 0.76);
+  --bex-surface-elev: rgba(255, 255, 255, 0.90);
+  --bex-surface-soft: rgba(248, 249, 253, 0.74);
+  --bex-border: rgba(24, 24, 38, 0.09);
+  --bex-border-strong: rgba(240, 145, 153, 0.42);
+  --bex-text: #1c1d26;
+  --bex-text-sub: #585b70;
+  --bex-text-muted: #8b8fa6;
+  --bex-shadow: 0 18px 46px rgba(20, 22, 40, 0.07);
+  --bex-magi-amber: #d97706;
+  --bex-magi-bg: rgba(254, 243, 199, 0.48);
+  --bex-dollars-bg: #11131a;
+  --bex-dollars-card: #1a1d27;
+  --bex-dollars-bubble: #0b0d13;
+  --bex-dollars-text: #f8fafc;
+}
+
+html[data-theme="dark"] {
+  --bex-surface: rgba(24, 26, 36, 0.78);
+  --bex-surface-elev: rgba(32, 35, 48, 0.90);
+  --bex-surface-soft: rgba(18, 20, 29, 0.72);
+  --bex-border: rgba(255, 255, 255, 0.09);
+  --bex-border-strong: rgba(240, 145, 153, 0.48);
+  --bex-text: #f3f4f8;
+  --bex-text-sub: #b4b8cc;
+  --bex-text-muted: #7b8099;
+  --bex-shadow: 0 20px 52px rgba(0, 0, 0, 0.36);
+  --bex-magi-amber: #fbbf24;
+  --bex-magi-bg: rgba(245, 158, 11, 0.14);
+  --bex-dollars-bg: #0c0e14;
+  --bex-dollars-card: #141722;
+  --bex-dollars-bubble: #07080c;
+  --bex-dollars-text: #f8fafc;
+}
+
+.bex-container {
+  max-width: 1360px;
+  margin: 22px auto 56px;
+  padding: 0 24px;
+}
+
+/* ==================== Hero Banner (#header) ==================== */
+.bex-hero {
+  position: relative;
+  padding: 24px 28px 20px;
+  border-radius: 24px;
+  background: var(--bex-surface);
+  border: 1px solid var(--bex-border);
+  box-shadow: var(--bex-shadow);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  margin-bottom: 22px;
+}
+
+.bex-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.bex-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent, #f09199);
+  margin-bottom: 6px;
+}
+
+.bex-title {
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--bex-text);
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.bex-subtitle {
+  font-size: 13.5px;
+  color: var(--bex-text-sub);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.bex-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bex-stat-chip {
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 108px;
+}
+
+.bex-stat-chip span {
+  font-size: 11px;
+  color: var(--bex-text-muted);
+}
+
+.bex-stat-chip strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--bex-text);
+}
+
+/* Primary Mode Tabs (ul.navTabs) */
+.bex-mode-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 16px 0 0;
+  margin: 16px 0 0;
+  border-top: 1px solid var(--bex-border);
+  flex-wrap: wrap;
+}
+
+.bex-mode-tabs > li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--bex-text-sub);
+  text-decoration: none;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+  transition: all 0.2s ease;
+}
+
+.bex-mode-tabs > li > a:hover {
+  color: var(--bex-text);
+  border-color: var(--bex-border-strong);
+  transform: translateY(-1px);
+}
+
+.bex-mode-tabs > li > a.focus {
+  background: var(--accent, #f09199);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(240, 145, 153, 0.34);
+}
+
+.bex-mode-badge {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+  font-weight: 700;
+}
+
+/* ==================== 1. Wiki Center (/wiki) ==================== */
+.bex-subtabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  border-radius: 18px;
+  background: var(--bex-surface);
+  border: 1px solid var(--bex-border);
+  margin-bottom: 20px;
+}
+
+ul.navSubTabs.bex-wiki-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+ul.navSubTabs.bex-wiki-subtabs > li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--bex-text-sub);
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+ul.navSubTabs.bex-wiki-subtabs > li > a.focus,
+ul.navSubTabs.bex-wiki-subtabs > li > a:hover {
+  background: rgba(240, 145, 153, 0.16);
+  color: var(--accent, #f09199);
+}
+
+.bex-wiki-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.1fr 0.95fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.bex-card {
+  background: var(--bex-surface);
+  border: 1px solid var(--bex-border);
+  border-radius: 22px;
+  padding: 20px 22px;
+  box-shadow: var(--bex-shadow);
+  backdrop-filter: blur(20px) saturate(155%);
+  -webkit-backdrop-filter: blur(20px) saturate(155%);
+}
+
+.bex-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--bex-border);
+}
+
+.bex-card-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--bex-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bex-rev-list,
+.bex-create-list,
+.bex-rank-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.bex-rev-item {
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.bex-rev-item:hover {
+  border-color: var(--bex-border-strong);
+  transform: translateY(-1px);
+}
+
+.bex-rev-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bex-rev-subj {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--bex-text);
+  text-decoration: none;
+}
+
+.bex-rev-subj:hover {
+  color: var(--accent, #f09199);
+}
+
+.bex-rev-summary {
+  font-size: 12.5px;
+  color: var(--bex-text-sub);
+  line-height: 1.45;
+}
+
+.bex-rev-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--bex-text-muted);
+}
+
+.bex-rev-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--bex-text-sub);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bex-rev-user img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Spec Page 29: a.btnGraySmall / a.btnGray / input.btnPink / input.btnGray */
+a.btnGraySmall,
+.btnGraySmall {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--bex-text-sub);
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--bex-border);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+a.btnGraySmall:hover,
+.btnGraySmall:hover {
+  color: var(--accent, #f09199);
+  border-color: var(--bex-border-strong);
+  background: rgba(240, 145, 153, 0.14);
+}
+
+.bex-create-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 15px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+}
+
+.bex-create-cover {
+  width: 48px;
+  height: 64px;
+  border-radius: 9px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.bex-create-cover.is-music {
+  width: 54px;
+  height: 54px;
+}
+
+.bex-create-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bex-create-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--bex-text);
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bex-create-title:hover {
+  color: var(--accent, #f09199);
+}
+
+.bex-create-tip {
+  font-size: 12px;
+  color: var(--bex-text-sub);
+  margin: 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bex-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 15px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+}
+
+.bex-rank-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  background: rgba(240, 145, 153, 0.16);
+  color: var(--accent, #f09199);
+  flex-shrink: 0;
+}
+
+.bex-rank-ava {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.bex-rank-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bex-rank-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--bex-text);
+  text-decoration: none;
+}
+
+.bex-rank-badge {
+  font-size: 11px;
+  color: var(--bex-text-muted);
+  display: block;
+}
+
+.bex-rank-count {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent, #f09199);
+}
+
+/* User Wiki History ul.line_list (from sample_explore_wiki.html) */
+ul.line_list.bex-line-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+ul.line_list.bex-line-list > li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+}
+
+ul.line_list.bex-line-list > li h6 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+ul.line_list.bex-line-list > li h6 a {
+  color: var(--bex-text);
+  text-decoration: none;
+}
+
+ul.line_list.bex-line-list > li .tip_j {
+  font-size: 12px;
+  color: var(--bex-text-sub);
+  margin-left: 8px;
+}
+
+ul.line_list.bex-line-list > li .tip_j.alarm {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* ==================== 2. MAGI Quiz Challenge (/magi) ==================== */
+.bex-magi-grid {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.bex-magi-cat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bex-magi-cat-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 13px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bex-text-sub);
+  text-decoration: none;
+  background: var(--bex-surface-soft);
+  border: 1px solid transparent;
+  transition: all 0.18s ease;
+}
+
+.bex-magi-cat-list a.is-active,
+.bex-magi-cat-list a:hover {
+  border-color: var(--bex-border-strong);
+  color: var(--accent, #f09199);
+  background: rgba(240, 145, 153, 0.12);
+}
+
+a#createQuiz.btnGray,
+a.btnGray {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 13px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--bex-text);
+  background: var(--bex-surface-elev);
+  border: 1px solid var(--bex-border-strong);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+a#createQuiz.btnGray:hover {
+  background: var(--accent, #f09199);
+  color: #fff;
+}
+
+.bex-magi-cores {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bex-core-pill {
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--bex-magi-bg);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.bex-core-pill strong {
+  color: var(--bex-magi-amber);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Spec Page 29: .magiQuiz */
+.magiQuiz {
+  background: var(--bex-surface);
+  border: 1px solid var(--bex-border);
+  border-radius: 24px;
+  padding: 26px 28px;
+  box-shadow: var(--bex-shadow);
+}
+
+.bex-quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.bex-quiz-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  background: rgba(240, 145, 153, 0.16);
+  color: var(--accent, #f09199);
+}
+
+.bex-quiz-question {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--bex-text);
+  line-height: 1.55;
+  margin: 0 0 20px;
+}
+
+.bex-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 20px;
+}
+
+.bex-quiz-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 15px;
+  background: var(--bex-surface-soft);
+  border: 1.5px solid var(--bex-border);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bex-text);
+  transition: all 0.18s ease;
+}
+
+.bex-quiz-opt:hover {
+  border-color: var(--bex-border-strong);
+}
+
+.bex-quiz-opt.is-selected {
+  border-color: var(--accent, #f09199);
+  background: rgba(240, 145, 153, 0.12);
+}
+
+.bex-quiz-opt.is-correct {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.14);
+}
+
+.bex-quiz-opt.is-wrong {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.bex-quiz-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+input.btnPink,
+.btnPink {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, var(--accent, #f09199), #e11d48);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(240, 145, 153, 0.34);
+  transition: transform 0.18s ease;
+}
+
+input.btnPink:hover {
+  transform: translateY(-1px);
+}
+
+input.btnGray {
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--bex-border);
+  background: var(--bex-surface-soft);
+  color: var(--bex-text-sub);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+input.btnGray:hover {
+  color: var(--bex-text);
+  border-color: var(--bex-border-strong);
+}
+
+.bex-quiz-feedback {
+  margin-top: 18px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: var(--bex-surface-soft);
+  border-left: 4px solid var(--accent, #f09199);
+  font-size: 13px;
+  color: var(--bex-text-sub);
+  line-height: 1.6;
+}
+
+/* ==================== 3. Dollars Chatroom (/dollars) ==================== */
+.bex-dollars-shell {
+  border-radius: 26px;
+  background: var(--bex-dollars-bg);
+  color: var(--bex-dollars-text);
+  padding: 26px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.bex-dollars-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bex-dollars-logo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #fff;
+}
+
+/* Spec Page 29: div#chatBox > form#messageForm > input.textfield + input.tweet[value="POST!"] */
+#chatBox {
+  background: var(--bex-dollars-card);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+#messageForm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#messageForm input.textfield {
+  flex: 1;
+  min-width: 240px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #090b10;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+#messageForm input.textfield:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22);
+}
+
+#messageForm input.tweet {
+  padding: 11px 24px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #000;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+#messageForm input.tweet:hover {
+  background: #fff;
+  color: #000;
+}
+
+.bex-dollars-quick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.bex-dollars-chip {
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+.bex-dollars-chip:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+#chatList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bex-chat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 20px;
+  background: var(--bex-dollars-bubble);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+}
+
+.bex-chat-ava {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #38bdf8;
+  flex-shrink: 0;
+}
+
+.bex-chat-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bex-chat-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.bex-chat-user {
+  font-weight: 800;
+  color: #fff;
+  font-size: 13.5px;
+}
+
+.bex-chat-text {
+  font-size: 14.5px;
+  color: #f8fafc;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+/* Diff Modal */
+.bex-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 14, 22, 0.62);
+  backdrop-filter: blur(8px);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.bex-modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.bex-modal-card {
+  width: min(680px, 100%);
+  border-radius: 22px;
+  background: var(--bex-surface-elev);
+  border: 1px solid var(--bex-border);
+  padding: 22px 24px;
+  box-shadow: var(--bex-shadow);
+}
+
+.bex-diff-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.bex-diff-box {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--bex-surface-soft);
+  border: 1px solid var(--bex-border);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  color: var(--bex-text);
+}
+
+@media (max-width: 1060px) {
+  .bex-wiki-grid,
+  .bex-magi-grid,
+  .bex-diff-cols {
+    grid-template-columns: 1fr;
+  }
+}

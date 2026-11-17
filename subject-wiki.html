@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-accent="pink">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>葬送的芙莉莲 的维基编辑与修订 · Bangumi 番组计划</title>
+  <link rel="stylesheet" href="css/bangumi-home-preview.css?v=23" />
+  <link rel="stylesheet" href="css/prg_editorial.css?v=23" />
+  <link rel="stylesheet" href="css/prg_soft.css?v=23" />
+  <link rel="stylesheet" href="css/bangumi-wings.css?v=23" />
+  <link rel="stylesheet" href="css/brand.css?v=23" />
+  <link rel="stylesheet" href="css/topbar-account.css?v=28" />
+  <link rel="stylesheet" href="css/bangumi-subject.css?v=5" />
+  <!-- 条目 Wiki 编辑与修订体系专属样式 (B9 / Page 12) -->
+  <link rel="stylesheet" href="css/bangumi-wiki.css?v=1" />
+  <link rel="stylesheet" href="css/bangumi-shell.css?v=4" />
+</head>
+<body>
+  <!-- 1. 动态色散环境背景光晕 (Dynamic Artwork Ambient Mesh) -->
+  <div class="ambient-canvas" id="ambientCanvas" aria-hidden="true">
+    <div class="ambient-orb orb-primary" id="orbPrimary"></div>
+    <div class="ambient-orb orb-secondary" id="orbSecondary"></div>
+    <div class="ambient-orb orb-tertiary" id="orbTertiary"></div>
+    <div class="ambient-noise"></div>
+  </div>
+
+  <!-- 全局轻量提示 Toast -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Margin Liquid Glass SVG 折射滤镜 (#lg-bar & #lg-thumb) -->
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+    <filter id="lg-bar" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P... (line truncated to 2000 chars)
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.008 0.05" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="lg-thumb" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+      <feImage result="map" width="100%" height="100%" x="0" y="0" preserveAspectRatio="none" href="data:image/webp;base64,UklGRq4vAABXRUJQVlA4WAoAAAAQAAAA5wEAhwAAQUxQSOYWAAABHAVpGzCrf9t7EiJCYdIGTDpvURGm9n7K+YS32rZ1W8q0LSSEBCQgAQlIwEGGA3CQOAAHSEDCJSEk4KDvUmL31vrYkSX3ufgXEb4gSbKt2LatxlqIgNBBzbM3ikHVkvUvq7btKpaOBCQgIRIiAQeNg46DwgE4oB1QDuKgS0IcXBykXieHkwdjX/4iAhZtK3ErSBYGEelp+4aM/5/+z14+//jLlz/++s/Xr4//kl9C8Ns8DaajU+lPX/74+viv/eWxOXsO+eHL3/88/ut/2b0zref99evjX8NLmNt1fP7178e/jJcw9k3G//XP49/Iy2qaa7328Xkk9ZnWx0VUj3bcyCY4Pi7C6reeEagEohnRCbQQwFmUp9ggYQj8MChjTSI0Ck7G/bh6P5ykNU9yP+10G8I2UAwXeQ96DQwNjqyPu/c4tK+5CtGOK0oM7AH5f767lHpotXVYYI66B+HjMhHj43C5wok3YDH4/vZFZRkB7rNnEfC39WS2Q3K78y525wFNTPf5f+/fN9YI1YyDvjuzV5rQtsfn1Ez1ka3PkeGxOZ6IODxDJqCLpF7vdb9Z3s/ufLr6jf/55zbW3LodwwVVg7Lmao+p3eGcqDFDGuuKnlBZAPSbnkYtTX+mZl2y57Gq85F3tDv7m7/yzpjXHoVA3YUObsHz80W3IUK1E8yRqggxTMzD4If2230ys7RDxWrLu9o9GdSWNwNRC2yMIg+HkTVT3BOZER49XLBMdljemLFMjw8VwZ8OdBti4lWdt7c7dzaSc5yILtztsTMT1GFGn/tysM23nF3xbOsnh/eQGKkxhWGEalljCvWZ+LDE+9t97uqEfb08rdYwZGhheLzG2SJzKS77OIAVgPDjf9jHt6c+0mjinS/v13iz9RV3vsPdmbNG1E+nD6s83jBrBEnlBiTojuJogGJNtzxtsIoD2CFuXYipzhGWHhWqCBSqd7l7GMrnuHzH6910FO+XYwgcDxoFRJNk2GUcpQ6I/GhLmqisuBS6uSFpfAz3Yb9Yatyed7r781ZYfr3+3FfXs1MykSbVcg4GiOKX19SZ9xFRwhG+UZGiROjsXhePVu12fCZTJ3CJ4Z3uXnyxz28RutHa5yCKG6jgfTBPuA9jHL7YdlAa2trNEr7BLANd3qNYcWZqnkvlDe8+F5Q/9k8jCFk17ObrIf0O/5U/iDnqcqA70mURr8FUN5pmQEzDcxuWvOPd1+KrbO4fd0vXK5OTtYEy5C2TA5L4ok6Y31WHR9ZR9lQr6IjwruSd775W6NVa2zz1fir2k1GWnT573Eu3mfMjIikYZkM4MDCnTWbmLrpK/Hs0KD5C8rZ3n0tnw0j76WuU8P1YBIjsvcESbnOQMY+gGC/sd/gG+hKKtDijJHhrcSj/GHa/FZ8oGLXeLx1IW+cgU8pqD0PzMzU3oG5lQ/ZaDPDMYq+aAPSEmHN+JiVIp0haHTvPt77732z5ed2K7NHs9FtCIk4BdNkKLRLvOKlFcw+UiovM4OB5sGgepyML+a4TEu/I29/dFtjJulojJR4Tg71ybApEdca0TSnaumNJyCWH2piENASlQS/NIXMWtiPV9CHsvuftev08/lemYIcUnHSu6XEMvaBq41tqf/m0siLj7xeXsnBmhxY5z+nCwX4Iu4euTPaE4EQorgogisHrBtsAMdX+Huje7nlx3hMpKovdf+YftDQqytChXfEh7D5nyC8rzNTICINmpK5Ni0ngcAMzpmiYDwOMtmUTiCjvx2S2dIeSguP/QHZ3xYIeGhTt1CsCOIiEuVw8pGjVznDJppuojl30i9RvXccXzmXGj2b3H3XM38c/P... (line truncated to 2000 chars)
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.006 0.02" result="blur"/>
+      <feDisplacementMap in="blur" in2="map" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- ==================== 顶部全局导航栏 (#headerNeue2) ==================== -->
+  <header class="top" id="headerNeue2">
+    <div class="top-left">
+      <a href="index.html" class="brand" title="返回主页预览">
+        <span class="tv" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect class="tv-screen" x="3" y="6.5" width="18" height="13.5" rx="4"/>
+            <path class="tv-antenna" d="m8 2.5 3.5 4m4.5-4-3.5 4"/>
+            <circle class="tv-eye" cx="9.2" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <circle class="tv-eye" cx="14.8" cy="12.8" r="1.15" fill="currentColor" stroke="none"/>
+            <path class="tv-mouth" d="M9.8 16.2c1.2.8 3.2.8 4.4 0"/>
+          </svg>
+          <span class="tv-scan" aria-hidden="true"></span>
+        </span>
+        <span class="brand-wordmark">
+          <span class="brand-serif">Bangumi</span>
+          <span class="brand-meta">
+            <span class="brand-meta-en">SUBJECT</span>
+            <span class="brand-meta-cn">条目详情</span>
+          </span>
+        </span>
+      </a>
+
+      <!-- 快速跳转主页与频道 -->
+      <nav class="et nav-et" id="navMenuNeue" aria-label="频道导航栏">
+          <a href="index.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏠 返回主页</a>
+          <a href="subject.html" class="nav-chan" style="color:#fff;background:var(--accent);font-weight:700;">🎬 条目详情</a>
+          <a href="user.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🕰️ 个人时光机</a>
+          <a href="browser.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📊 分类浏览</a>
+          <a href="group.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👥 小组与讨论</a>
+          <a href="search.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔍 全站搜索</a>
+          <a href="mono.html" class="nav-chan" style="color:var(--accent);font-weight:700;">👤 人物频道</a>
+          <a href="rakuen.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🌌 超展开</a>
+          <a href="blog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">✒️ 日志广场</a>
+        <a href="catalog.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📑 目录广场</a>
+        <a href="settings.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⚙️ 个人设置</a>
+        <a href="explore.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🧭 探索实验室</a>
+        <a href="notify.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔔 电波提醒</a>
+        <a href="auth.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🔑 游客/登录</a>
+          <a href="browser.html?type=anime" class="nav-chan" style="background:var(--accent-faint);">动画</a>
+        <a href="browser.html?type=book" class="nav-chan">书籍</a>
+        <a href="browser.html?type=music" class="nav-chan">音乐</a>
+        <a href="browser.html?type=game" class="nav-chan">游戏</a>
+        <a href="browser.html?type=real" class="nav-chan">三次元</a>
+          <a href="channel.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📺 频道主页</a>
+          <a href="calendar.html" class="nav-chan" style="color:var(--accent);font-weight:700;">📅 每日放送</a>
+          <a href="tag.html" class="nav-chan" style="color:var(--accent);font-weight:700;">🏷️ 标签广场</a>
+          <a href="timeline.html" class="nav-chan" style="color:var(--accent);font-weight:700;">⏱️ 时空管理局</a>
+        </nav>
+    </div>
+
+    <!-- 顶部中央搜索栏 -->
+    <form class="search" id="headerSearch" onsubmit="return false;" role="search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-3.5-3.5"/>
+      </svg>
+      <button type="button" class="search-cat-pill">
+        <span>动画</span>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4.5 6 7.5l3-3"/></svg>
+      </button>
+      <input type="search" placeholder="在条目中快速检索..." autocomplete="off" />
+      <kbd>/</kbd>
+    </form>
+
+    <!-- 右侧工具栏 -->
+    <div class="acts">
+      <nav class="et act-et" id="actBar" aria-label="快捷工具栏">
+        <a href="index.html" class="act et-btn" title="查看主页视觉原型">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>主页</span>
+        </a>
+        <button type="button" class="act et-btn" id="btnOpenThemeSettings" onclick="document.getElementById('customizeModal').hidden = false;" title="设置主题">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>外观</span>
+        </button>
+      </nav>
+      <!-- Margin 原版昼夜云朵星辰拟物开关 (.ts) -->
+      <button type="button" class="ts" id="btnThemeToggle" role="switch" aria-label="切换浅色/深色主题" title="切换浅色 / 深色模式">
+        <span class="ts-c" aria-hidden="true"><span class="ts-clouds"></span><span class="ts-stars"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 55" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M135.831 3.00688C135.055 3.85027 134.111 4.29946 133 4.35447C134.111 4.40947 135.055 4.85867 135.831 5.71123C136.607 6.55462 136.996 7.56303 136.996 8.72727C136.996 7.95722 137.172 7.25134 137.525 6.59129C137.886 5.93124 138.372 5.39954 138.98 5.00535C139.598 4.60199 140.268 4.39114 141 4.35447C139.88 4.2903 138.936 3.85027 138.16 3.00688C137.384 2.16348 136.996 1.16425 136.996 0C136.996 1.16425 136.607 2.16348 135.831 3.00688ZM31 23.3545C32.1114 23.2995 33.0551 22.8503 33.8313 22.0069C34.6075 21.1635 34.9956 20.1642 34.9956 19C34.9956 20.1642 35.3837 21.1635 36.1599 22.0069C36.9361 22.8503 37.8798 23.2903 39 23.3545C38.2679 23.3911 37.5976 23.602 36.9802 24.0053C36.3716 24.3995 35.8864 24.9312 35.5248 25.5913C35.172 26.2513 34.9956 26.9572 34.9956 27.7273C34.9956 26.563 34.6075 25.5546 33.8313 24.7112C33.0551 23.8587 32.1114 23.4095 31 23.3545ZM0 36.3545C1.11136 36.2995 2.05513 35.8503 2.83131 35.0069C3.6075 34.1635 3.99559 33.1642 3.99559 32C3.99559 33.1642 4.38368 34.1635 5.15987 35.0069C5.93605 35.8503 6.87982 36.2903 8 36.3545C7.26792 36.3911 6.59757 36.602 5.98015 37.0053C5.37155 37.3995 4.88644 37.9312 4.52481 38.5913C4.172 39.2513 3.99559 39.9572 3.99559 40.7273C3.99559 39.563 3.6075 38.5546 2.83131 37.7112C2.05513 36.8587 1.11136 36.4095 0 36.3545ZM56.8313 24.0069C56.0551 24.8503 55.1114 25.2995 54 25.3545C55.1114 25.4095 56.0551 25.8587 56.8313 26.7112C57.6075 27.5546 57.9956 28.563 57.9956 29.7273C57.9956 28.9572 58.172 28.2513 58.5248 27.5913C58.8864 26.9312 59.3716 26.3995 59.9802 26.0053C60.5976 25.602 61.2679 25.3911 62 25.3545C60.8798 25.2903 59.9361 24.8503 59.1599 24.0069C58.3837 23.1635 57.9956 22.1642 57.9956 21C57.9956 22.1642 57.6075 23.1635 56.8313 24.0069ZM81 25.3545C82.1114 25.2995 83.0551 24.8503 83.831... (line truncated to 2000 chars)
+      </button>
+
+      <!-- 36px 纯净圆头像：与主页设计高度一致的个人卡片入口 -->
+      <div class="um-wrap" id="userAvatarWrap">
+        <a href="user.html" class="user in" id="userAvatarBtn" aria-label="进入 少年游 的个人时光机" title="进入 少年游 (UID: 553488) 的个人时光机">
+          <img src="https://lain.bgm.tv/pic/user/l/000/55/34/553488.jpg?r=1697955910&hd=1" alt="少年游" referrerpolicy="no-referrer" />
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 主内容容器 ==================== -->
+  <main class="page-container" style="max-width: 1420px; margin: 0 auto; padding: 0 24px;">
+
+    <!-- ==================== 1. 条目专属全景顶栏 (#headerSubject) ==================== -->
+    <section class="subject-banner" id="headerSubject">
+      <div class="subject-banner-backdrop" id="subjectBackdrop"></div>
+      <div class="subject-banner-inner">
+        <!-- 标签与排行徽章 + 全品类预设快捷切换条 -->
+        <div class="subject-header-meta">
+          <span class="subject-type-badge" id="subjectTypeBadge">TV 动画</span>
+          <span class="subject-rank-badge" id="subjectRankBadge">Rank #43</span>
+          <div class="banner-category-Readiness-bar" id="bannerCategoryBar" role="tablist" aria-label="维基修订全品类条目切换">
+            <span class="cat-bar-label">维基协力全品类切换:</span>
+            <button type="button" class="preset-pill-btn banner-cat-pill active" data-subject-id="400602">📺 动画·芙莉莲 (7.7w藏/8.52★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="265">🤖 动画·EVA (6.6w藏/8.68★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="253">🎷 动画·星际牛仔 (4.6w藏/9.09★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="305429">📚 书籍·芙莉莲漫画 (7.6k藏/8.04★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="310920">📖 单行本·Vol.1 (180藏/7.97★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="477900">🎵 音乐·晴る (389藏/8.17★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="37141">🎮 游戏·女神异闻录5R (7.5k藏/8.59★)</button>
+            <button type="button" class="preset-pill-btn banner-cat-pill" data-subject-id="225581">🎬 日剧·非自然死亡 (5.0k藏/8.37★)</button>
+          </div>
+        </div>
+
+        <!-- 标题行与快捷功能药丸 -->
+        <div class="subject-title-row">
+          <div class="subject-title-group">
+            <h1 class="nameSingle">
+              <span class="title-jp" id="subjectTitleJp">葬送のフリーレン</span>
+              <span class="title-cn" id="subjectTitleCn">葬送的芙莉莲</span>
+            </h1>
+          </div>
+          <div class="subject-header-actions">
+            <button class="action-pill-btn" onclick="navigator.clipboard.writeText(location.href);alert('已复制条目链接！');">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span>分享</span>
+            </button>
+            <button class="action-pill-btn" onclick="alert('已将本条目加入待建目录');">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>加目录</span>
+            </button>
+            <a href="subject-wiki.html?id=400602" id="headerWikiActionBtn" class="action-pill-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Wiki</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 一级导航 Tabs (随五大分类/系列单本动态自适应) -->
+        <!-- 一级导航 Tabs (随五大分类/系列单本动态自适应) -->
+        <ul class="subject-nav-tabs" id="subjectNavTabs">
+          <li class="subject-nav-tab-item"><a href="subject.html?id=400602" data-tab="overview">概览</a></li>
+          <li class="subject-nav-tab-item"><a href="subject-ep.html?id=400602" data-tab="episodes">章节 <span class="tab-count">28</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-characters.html?id=400602" data-tab="characters">角色 <span class="tab-count">91</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-persons.html?id=400602" data-tab="persons">制作人员 <span class="tab-count">676</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-comments.html?id=400602" data-tab="comments">吐槽箱 <span class="tab-count">38</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-reviews.html?id=400602&amp;tab=reviews" data-tab="reviews">评论 <span class="tab-count">15</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-reviews.html?id=400602&amp;tab=board" data-tab="board">讨论版 <span class="tab-count">20</span></a></li>
+          <li class="subject-nav-tab-item"><a href="subject-stats.html?id=400602" data-tab="stats">透视 <span class="tab-count">Stats</span></a></li>
+          <li class="subject-nav-tab-item active"><a href="subject-wiki.html?id=400602" class="focus" data-tab="wiki">维基修订 <span class="tab-count">Wiki</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 条目 Wiki 编辑与修订体系主工作区 (Page 12) ==================== -->
+    <div id="main" class="png_bg bwk-main-container">
+
+      <!-- 2.1 Wiki 顶栏横幅与二级导航栏 ul.navSubTabs (共 6 个 Tab, Spec Page 12 :571-577) -->
+      <section class="bwk-top-shell" aria-label="条目维基二级导航栏">
+        <div class="bwk-top-meta-row">
+          <div class="bwk-top-title-group">
+            <span class="bwk-wiki-badge">🧬 Bangumi Wiki Engine r771</span>
+            <span class="bwk-route-Indicator" id="bwkCurrentRouteBadge">/subject/400602/edit_detail</span>
+            <span class="bwk-stat-pill" id="bwkLockLevelPill">🔓 权限：<strong id="bwkLockLevelText">全站维基人可编辑 (Wiki Level ≥ 1)</strong></span>
+          </div>
+          <div class="bwk-top-stats-pills">
+            <span class="bwk-stat-pill">累计修订 <strong id="bwkStatTotalRevs">28</strong> 次</span>
+            <span class="bwk-stat-pill">参与维基人 <strong id="bwkStatContributors">14</strong> 位</span>
+            <span class="bwk-stat-pill">最近更新 <strong id="bwkStatLastTime">2026-11-08 21:42</strong></span>
+            <span class="bwk-stat-pill">完整度 <strong id="bwkStatQuality">98%</strong></span>
+          </div>
+        </div>
+
+        <div class="bwk-subtabs-bar">
+          <!-- Spec Page 12 硬性要求：ul.navSubTabs 共 6 个 Tab -->
+          <ul class="navSubTabs" id="wikiNavSubTabs" role="tablist">
+            <li><a href="/subject/400602/edit_detail" class="focus" data-wiki-tab="edit_detail" id="subTabEditDetail">编辑</a></li>
+            <li><a href="/subject/400602/edit" data-wiki-tab="edit" id="subTabEditHistory">修订历史 <span class="bwk-subtab-count" id="subTabCountRevs">6</span></a></li>
+            <li><a href="/subject/400602/upload_img" data-wiki-tab="upload_img" id="subTabUploadImg">增改封面 <span class="bwk-subtab-count" id="subTabCountCovers">3</span></a></li>
+            <li><a href="/subject/400602/add_related/character" data-wiki-tab="add_related_character" id="subTabRelChar">关联角色 <span class="bwk-subtab-count" id="subTabCountChars">10</span></a></li>
+            <li><a href="/subject/400602/add_related/person" data-wiki-tab="add_related_person" id="subTabRelPerson">关联人物 <span class="bwk-subtab-count" id="subTabCountPersons">12</span></a></li>
+            <li><a href="/subject/400602/add_related/subject/anime" data-wiki-tab="add_related_subject" id="subTabRelSubject">关联条目 <span class="bwk-subtab-count" id="subTabCountSubjects">6</span></a></li>
+          </ul>
+
+          <div class="bwk-view-mode-switch" role="group" aria-label="工作台展示模式">
+            <button type="button" class="bwk-mode-chip is-active" id="btnLayoutAllInOne" data-layout="all">🗂️ 全景同屏工作台</button>
+            <button type="button" class="bwk-mode-chip" id="btnLayoutSingleTab" data-layout="single">🎯 单页签聚焦模式</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2.2 双栏核心工作区 -->
+      <div class="bwk-workspace-grid">
+        <div class="bwk-main-column">
+
+          <!-- ==================== PANE A: 条目详情编辑页 (/subject/{id}/edit_detail) ==================== -->
+          <section class="bwk-pane-card" id="wikiPaneEditDetail" data-pane="edit_detail" aria-label="条目详情编辑页">
+            <header class="bwk-pane-header">
+              <div class="bwk-pane-title-wrap">
+                <h2>✏️ 条目详情编辑 (<code id="bwkEditDetailRouteCode">/subject/400602/edit_detail</code>)</h2>
+                <p class="bwk-pane-subtitle">支持 Bangumi 原生 WCODE 源码与可视化属性表格双向无损转换，提交后自动生成新版本快照</p>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button type="button" class="btnGray" id="btnResetInfoboxDefault">↺ 恢复当前版本</button>
+                <button type="button" class="btnGray" id="btnToggleSplitEditor">◫ 双栏同屏实时对照</button>
+              </div>
+            </header>
+
+            <!-- Spec Page 12 硬性要求：form[name="edit_subject"] -->
+            <form name="edit_subject" id="editSubjectForm" action="/subject/400602/edit_detail" method="post" onsubmit="return false;">
+              <div class="bwk-form-grid">
+                <!-- 条目名输入框 input[name="subject_title"].inputtext -->
+                <div class="bwk-field-col-8">
+                  <label class="bwk-field-label" for="subjectTitleInput">
+                    <span>条目原名 / 主标题 (<code>input[name="subject_title"]</code>)</span>
+                    <span class="bwk-field-hint">请填写官方原名，中文译名请在下方 Infobox「中文名」字段维护</span>
+                  </label>
+                  <input type="text" name="subject_title" id="subjectTitleInput" class="inputtext" value="葬送のフリーレン" required />
+                </div>
+
+                <!-- 日期输入框 input[name="subject_airdate"] -->
+                <div class="bwk-field-col-4">
+                  <label class="bwk-field-label" for="subjectAirdateInput">
+                    <span>放送开始 / 发售日期 (<code>subject_airdate</code>)</span>
+                    <span class="bwk-field-hint">YYYY-MM-DD</span>
+                  </label>
+                  <input type="text" name="subject_airdate" id="subjectAirdateInput" class="inputtext" value="2023-09-29" placeholder="YYYY-MM-DD" />
+                </div>
+
+                <!-- 平台/类型单选按钮组 input[type="radio"][name="platform"] -->
+                <div class="bwk-field-col-8">
+                  <div class="bwk-field-label">
+                    <span>类型 / 平台分类 (<code>input[type="radio"][name="platform"]</code>)</span>
+                    <span class="bwk-field-hint" id="bwkPlatformCatHint">当前所属频道：动画 (Anime)</span>
+                  </div>
+                  <div class="bwk-platform-group" id="wikiPlatformRadios">
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="TV" checked /> TV</label>
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="WEB" /> WEB</label>
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="OVA" /> OVA</label>
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="剧场版" /> 剧场版</label>
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="动态漫画" /> 动态漫画</label>
+                    <label class="bwk-platform-radio-label"><input type="radio" name="platform" value="其他" /> 其他</label>
+                  </div>
+                </div>
+
+                <!-- 受限内容勾选框 input[name="subject_nsfw"][type="checkbox"] -->
+                <div class="bwk-field-col-4">
+                  <div class="bwk-field-label">
+                    <span>分级与受限标识 (<code>subject_nsfw</code>)</span>
+                  </div>
+                  <label class="bwk-nsfw-box" for="subjectNsfwCheckbox">
+                    <input type="checkbox" name="subject_nsfw" id="subjectNsfwCheckbox" value="1" />
+                    <span>包含受限内容 (NSFW / R-18 仅登录可见)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 维基模式切换工具栏（严格包含 Spec 要求的 2 个 input.btnGray 按钮） -->
+              <div class="bwk-editor-toolbar">
+                <div class="bwk-editor-mode-btns">
+                  <input class="btnGray" type="button" onclick="WikiToTable()" value="切换至表格模式 »" id="btnWikiToTable" />
+                  <input class="btnGray is-active-mode" type="button" onclick="TableToWiki()" value="« 切换至WCODE模式" id="btnTableToWiki" />
+                  <span class="bwk-field-hint" id="bwkEditorModeStatusText">当前模式：WCODE 源码与表格双通就绪</span>
+                </div>
+                <div class="bwk-quick-insert-bar">
+                  <span class="bwk-field-hint">快捷插入字段：</span>
+                  <button type="button" class="bwk-insert-chip" data-insert-key="官方网站" data-insert-val="https://">+ 官方网站</button>
+                  <button type="button" class="bwk-insert-chip" data-insert-key="放送星期" data-insert-val="星期五">+ 放送星期</button>
+                  <button type="button" class="bwk-insert-chip" data-insert-key="动画制作" data-insert-val="">+ 动画制作</button>
+                  <button type="button" class="bwk-insert-chip" data-insert-key="Copyright" data-insert-val="©">+ Copyright</button>
+                  <button type="button" class="bwk-insert-chip" data-insert-group="别名">+ 别名分组 {[]}</button>
+                </div>
+              </div>
+
+              <!-- Infobox 编辑工作区：包含 textarea#subject_infobox 与 #tableEditor -->
+              <div class="bwk-infobox-workbench is-split-view" id="bwkInfoboxWorkbench">
+                <!-- 左/主：WCODE 源码框 textarea#subject_infobox -->
+                <div class="bwk-wcode-panel" id="bwkWcodePanel">
+                  <div class="bwk-field-label">
+                    <span>WCODE 源码编辑器 (<code>textarea#subject_infobox</code>)</span>
+                    <span class="bwk-field-hint" id="bwkWcodeLineCounter">26 行 · Infobox animanga/TVAnime</span>
+                  </div>
+                  <textarea id="subject_infobox" name="subject_infobox" rows="16" spellcheck="false">{{Infobox animanga/TVAnime
+|中文名= 葬送的芙莉莲
+|别名={
+[英文名|Frieren: Beyond Journey's End]
+[罗马音|Sousou no Frieren]
+}
+|话数= 28
+|放送开始= 2023年9月29日
+|放送星期= 星期五
+|原作= 山田鐘人、アベツカサ（小学館「週刊少年サンデー」連載）
+|导演= 斎藤圭一郎
+|系列构成= 鈴木智尋
+|脚本= 鈴木智尋
+|音乐= Evan Call
+|人物设定= 長澤礼子
+|动画制作= MADHOUSE
+|官方网站= https://frieren-anime.jp/
+}}</textarea>
+                </div>
+
+                <!-- 右/切换：表格编辑器 #tableEditor -->
+                <div class="bwk-table-panel" id="bwkTablePanel">
+                  <div class="bwk-field-label">
+                    <span>可视化属性表格编辑器 (<code>#tableEditor</code>)</span>
+                    <span class="bwk-field-hint" id="bwkTableRowCountText">共 23 项属性字段</span>
+                  </div>
+                  <div id="tableEditor">
+                    <div class="bwk-table-editor-head">
+                      <span>#</span>
+                      <span>属性名 (Property)</span>
+                      <span>属性值 / 子分组明细 (Value / Sub-rows)</span>
+                      <span style="text-align:right;">操作</span>
+                    </div>
+                    <div class="bwk-table-rows-list" id="bwkTableRowsContainer">
+                      <div class="bwk-tbl-row" data-row-index="0">
+                        <span class="bwk-row-idx">1</span>
+                        <input type="text" class="inputtext bwk-tbl-key" value="中文名" />
+                        <input type="text" class="inputtext bwk-tbl-val" value="葬送的芙莉莲" />
+                        <div class="bwk-tbl-row-actions">
+                          <button type="button" class="bwk-row-icon-btn is-danger" data-act="del-row" title="删除行">✕</button>
+                        </div>
+                      </div>
+                      <div class="bwk-tbl-row" data-row-index="1">
+                        <span class="bwk-row-idx">2</span>
+                        <input type="text" class="inputtext bwk-tbl-key" value="话数" />
+                        <input type="text" class="inputtext bwk-tbl-val" value="28" />
+                        <div class="bwk-tbl-row-actions">
+                          <button type="button" class="bwk-row-icon-btn is-danger" data-act="del-row" title="删除行">✕</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bwk-table-editor-foot">
+                      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button type="button" class="btnGray" id="btnAddTableRow">+ 添加单行属性</button>
+                        <button type="button" class="btnGray" id="btnAddTableGroupRow">+ 添加多值折叠分组 (sub_group)</button>
+                      </div>
+                      <button type="button" class="btnGray" onclick="TableToWiki()">同步表格至 WCODE ↻</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 作品简介框 textarea#subject_summary -->
+              <div style="margin-bottom: 18px;">
+                <label class="bwk-field-label" for="subject_summary">
+                  <span>作品简介 (<code>textarea#subject_summary</code>)</span>
+                  <span class="bwk-field-hint" id="bwkSummaryCharCount">216 字</span>
+                </label>
+                <textarea id="subject_summary" name="subject_summary" rows="5">魔王被勇者一行人打倒，世界迎来了和平。作为长寿的精灵魔法使芙莉莲，在与勇者辛美尔等人约定五十年后再相见后独自踏上旅行……
+五十年后，当她再度与故人重聚时，辛美尔已是白发苍苍的老人，并不久后离世。在辛美尔的葬礼上，芙莉莲为自己未曾真正去了解人类而流下悔恨的眼泪。
+为了“了解人类”，芙莉莲带着新收的徒弟菲伦，再次踏上巡礼这片曾经走过的大陆的旅途。</textarea>
+              </div>
+
+              <!-- 修订原因输入框 input#editSummary.inputtext + 提交按钮 input.inputBtn[type="submit"][name="submit"][value="提交修改"] -->
+              <div>
+                <label class="bwk-field-label" for="editSummary">
+                  <span>修订原因摘要 (<code>input#editSummary.inputtext</code>)</span>
+                  <span class="bwk-field-hint">良好的修订说明有助于其他维基人快速复核变更</span>
+                </label>
+                <input type="text" id="editSummary" name="editSummary" class="inputtext" value="校对放送日期与制作人员信息，补充多语言别名字段" placeholder="请填写本次修订说明（必填）..." />
+                <div class="bwk-summary-presets">
+                  <span class="bwk-field-hint">常用摘要：</span>
+                  <button type="button" class="bwk-insert-chip" data-summary-preset="修正错别字与标点符号">修正错别字与标点</button>
+                  <button type="button" class="bwk-insert-chip" data-summary-preset="依据官方网站补充 Staff 名单与放送情报">补充官方 Staff 情报</button>
+                  <button type="button" class="bwk-insert-chip" data-summary-preset="新增各地区出版版本 ISBN 与发售日 (sub_group)">新增多版本 ISBN</button>
+                  <button type="button" class="bwk-insert-chip" data-summary-preset="润色作品简介译文并统一专有名词译名">润色作品简介译文</button>
+                </div>
+              </div>
+
+              <div class="bwk-submit-footer">
+                <div class="bwk-field-hint">
+                  💡 提示：点击「提交修改」会将当前表单保存为最新修订版本（写入 <code>ul.line_list</code> 历史并同步更新右侧预览）。
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;">
+                  <input class="inputBtn" type="submit" name="submit" id="btnSubmitEditSubject" value="提交修改" />
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <!-- ==================== PANE B: 修订历史页 (/subject/{id}/edit) ==================== -->
+          <section class="bwk-pane-card" id="wikiPaneEditHistory" data-pane="edit" aria-label="条目修订历史页">
+            <header class="bwk-pane-header">
+              <div class="bwk-pane-title-wrap">
+                <h2>🕓 条目修订历史 (<code id="bwkHistoryRouteCode">/subject/400602/edit</code>)</h2>
+                <p class="bwk-pane-subtitle">任选两个历史版本单选框（<code>rev1</code> 旧版 / <code>rev2</code> 新版），点击「对比选定版本」查看逐行 WCODE 与简介差异或一键回滚</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input class="inputBtn" type="button" id="btnCompareRevisionsTop" value="对比选定版本" />
+              </div>
+            </header>
+
+            <div class="bwk-history-controls">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;">
+                <span>单选列说明：<strong>左列 (rev1)</strong> 选择基准旧版本，<strong>右列 (rev2)</strong> 选择目标新版本</span>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button type="button" class="btnGray" id="btnSelectLatestTwoRevs">⚡ 选中最新两版对比</button>
+                <button type="button" class="btnGray" id="btnSelectFirstAndLatestRevs">🔭 对比初始版与最新版</button>
+              </div>
+            </div>
+
+            <!-- Spec Page 12 硬性要求：ul.line_list > li 含 input[type="radio"][name="rev1"] 与 rev2、时间链接、编辑者、修订说明、回滚/查看按钮 -->
+            <ul class="line_list" id="wikiRevisionList">
+              <li class="is-selected-rev" data-rev-id="rev_4006026">
+                <div class="bwk-rev-radios">
+                  <input type="radio" name="rev1" value="rev_4006026" title="选为基准版本 rev1" />
+                  <input type="radio" name="rev2" value="rev_4006026" checked title="选为目标版本 rev2" />
+                </div>
+                <div class="bwk-rev-time-col">
+                  <span class="bwk-rev-ver-tag">v28 (当前版本)</span>
+                  <a href="#wikiDiffViewer" class="l bwk-rev-time-link" data-act="view-rev-snapshot" data-rev-id="rev_4006026">2026-11-08 21:42</a>
+                </div>
+                <div class="bwk-rev-main-col">
+                  <div class="bwk-rev-editor-line">
+                    <img src="https://lain.bgm.tv/pic/user/l/000/03/90/39066.jpg" alt="kamitsure" class="bwk-rev-avatar" referrerpolicy="no-referrer" />
+                    <a href="user.html?uid=39066" class="l">kamitsure</a>
+                    <span class="bwk-rev-editor-badge">高级维基人</span>
+                    <span class="bwk-rev-diff-pill">+2 / -0 行</span>
+                  </div>
+                  <div class="bwk-rev-summary">完善《葬送的芙莉莲》版权信息与播放结束日期，校对主创名单格式</div>
+                </div>
+                <div class="bwk-rev-actions">
+                  <button type="button" class="btnGray" data-act="view-rev-snapshot" data-rev-id="rev_4006026">查看快照</button>
+                  <button type="button" class="btnGray" data-act="rollback-rev" data-rev-id="rev_4006026">回滚至此版</button>
+                </div>
+              </li>
+              <li class="is-selected-rev" data-rev-id="rev_4006025">
+                <div class="bwk-rev-radios">
+                  <input type="radio" name="rev1" value="rev_4006025" checked title="选为基准版本 rev1" />
+                  <input type="radio" name="rev2" value="rev_4006025" title="选为目标版本 rev2" />
+                </div>
+                <div class="bwk-rev-time-col">
+                  <span class="bwk-rev-ver-tag">v27</span>
+                  <a href="#wikiDiffViewer" class="l bwk-rev-time-link" data-act="view-rev-snapshot" data-rev-id="rev_4006025">2026-10-19 16:15</a>
+                </div>
+                <div class="bwk-rev-main-col">
+                  <div class="bwk-rev-editor-line">
+                    <img src="https://lain.bgm.tv/pic/user/l/000/28/76/287622.jpg" alt="ner35" class="bwk-rev-avatar" referrerpolicy="no-referrer" />
+                    <a href="user.html?uid=287622" class="l">ner35</a>
+                    <span class="bwk-rev-editor-badge">动画维基管理员</span>
+                    <span class="bwk-rev-diff-pill">+3 / -1 行</span>
+                  </div>
+                  <div class="bwk-rev-summary">补充官方网站与播放电视台/出版发行渠道字段，修正全角标点</div>
+                </div>
+                <div class="bwk-rev-actions">
+                  <button type="button" class="btnGray" data-act="view-rev-snapshot" data-rev-id="rev_4006025">查看快照</button>
+                  <button type="button" class="btnGray" data-act="rollback-rev" data-rev-id="rev_4006025">回滚至此版</button>
+                </div>
+              </li>
+            </ul>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+              <!-- Spec Page 12 硬性要求：底部提交对比按钮 input.inputBtn[value="对比选定版本"] -->
+              <input class="inputBtn" type="button" id="btnCompareRevisions" value="对比选定版本" />
+              <span class="bwk-field-hint" id="bwkDiffSelectionHint">当前对比：v27 (2026-10-19) ➔ v28 (当前版本)</span>
+            </div>
+
+            <!-- 双版本逐行高亮 Diff 对比器 -->
+            <div class="bwk-diff-viewer" id="wikiDiffViewer">
+              <div class="bwk-diff-header">
+                <div id="bwkDiffHeaderTitle">🔍 版本差异对比 (Diff): <strong>v27</strong> vs <strong>v28 (当前版本)</strong></div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <span id="bwkDiffStatsBadge" style="color:#7ee787;font-family:monospace;">+2 新增 / -0 移除</span>
+                  <button type="button" class="btnGray" id="btnApplySelectedRevToEditor" style="padding:3px 10px;font-size:11.5px;">📥 将目标版本载入上方编辑器</button>
+                </div>
+              </div>
+              <div class="bwk-diff-body" id="bwkDiffBody">
+                <div class="bwk-diff-line is-meta"><span class="bwk-diff-sign">@</span><span>@@ Infobox WCODE &amp; Summary Diff @@</span></div>
+                <div class="bwk-diff-line"><span class="bwk-diff-sign"> </span><span>|播放电视台= 日本テレビ系「FRIDAY ANIME NIGHT」</span></div>
+                <div class="bwk-diff-line is-added"><span class="bwk-diff-sign">+</span><span>|播放结束= 2024年3月22日</span></div>
+                <div class="bwk-diff-line is-added"><span class="bwk-diff-sign">+</span><span>|Copyright= ©山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会</span></div>
+                <div class="bwk-diff-line"><span class="bwk-diff-sign"> </span><span>}}</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PANE C: 增改封面页 (/subject/{id}/upload_img) ==================== -->
+          <section class="bwk-pane-card" id="wikiPaneUploadImg" data-pane="upload_img" aria-label="增改条目封面页">
+            <header class="bwk-pane-header">
+              <div class="bwk-pane-title-wrap">
+                <h2>🖼️ 增改条目封面 (<code id="bwkUploadRouteCode">/subject/400602/upload_img</code>)</h2>
+                <p class="bwk-pane-subtitle">管理条目主视觉封面图库，支持切换默认生效封面、为高清无水印封面投票或上传新封面</p>
+              </div>
+            </header>
+
+            <div class="bwk-cover-workbench">
+              <div class="bwk-current-cover-card">
+                <img id="bwkCurrentCoverImg" src="https://lain.bgm.tv/pic/cover/l/13/c5/400602_ZI8Y9.jpg" alt="当前生效封面" referrerpolicy="no-referrer" />
+                <div style="font-size:13px;font-weight:700;margin-bottom:4px;" id="bwkCurrentCoverLabel">主视觉图 / 官方标准封面</div>
+                <div class="bwk-field-hint" id="bwkCurrentCoverMeta">1200 × 1700 px · 486 KB · 148 票</div>
+              </div>
+
+              <div>
+                <div class="bwk-field-label">
+                  <span>历史上传与候选封面图库 (点击「设为默认」可立即切换全站封面)</span>
+                  <span class="bwk-field-hint" id="bwkCoverCountHint">共 3 张封面存档</span>
+                </div>
+                <div class="bwk-cover-gallery-grid" id="wikiCoverGallery">
+                  <!-- 由 JS 渲染 -->
+                </div>
+
+                <div class="bwk-upload-dropzone">
+                  <div class="bwk-field-label" style="margin-bottom:0;">
+                    <span>📤 上传新候选封面 (支持本地图片预览或粘贴图片 URL)</span>
+                    <span class="bwk-field-hint">推荐尺寸 ≥ 800×1130，JPG/PNG/WebP</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:center;">
+                    <input type="text" id="bwkNewCoverUrlInput" class="inputtext" placeholder="粘贴高清封面图片 URL (https://...)..." />
+                    <input type="text" id="bwkNewCoverLabelInput" class="inputtext" placeholder="封面版本说明（如：BD 第2卷封面 / 台版书封）" />
+                    <input type="button" class="inputBtn" id="btnUploadNewCover" value="上传并设为封面" />
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                    <label class="btnGray" style="cursor:pointer;">
+                      <span>📁 从本地选择图片文件...</span>
+                      <input type="file" id="bwkLocalCoverFileInput" accept="image/*" style="display:none;" />
+                    </label>
+                    <span class="bwk-field-hint">上传封面将自动记录至条目修订历史并同步更新顶栏背景氛围光</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== PANE D: 关联角色/人物/条目页 (/add_related/*) ==================== -->
+          <section class="bwk-pane-card" id="wikiPaneAddRelated" data-pane="add_related" aria-label="维基关联角色人物条目工作台">
+            <header class="bwk-pane-header">
+              <div class="bwk-pane-title-wrap">
+                <h2>🔗 维基关联管理 (<code id="bwkRelatedRouteCode">/subject/400602/add_related/character</code>)</h2>
+                <p class="bwk-pane-subtitle">管理本条目的登场角色、制作人员与关联派生作品；支持调整排序、职位/参与集数、移除或从右侧检索添加</p>
+              </div>
+            </header>
+
+            <!-- 三类关联切换器（与顶部 ul.navSubTabs 第 4/5/6 项双向同步） -->
+            <div class="bwk-related-type-tabs" role="tablist">
+              <button type="button" class="bwk-rel-type-btn is-active" data-rel-mode="character" id="btnRelModeCharacter">
+                🎭 关联角色 (<code>/add_related/character</code>) <span class="bwk-subtab-count" id="relModeCountChar">10</span>
+              </button>
+              <button type="button" class="bwk-rel-type-btn" data-rel-mode="person" id="btnRelModePerson">
+                🎬 关联人物 (<code>/add_related/person</code>) <span class="bwk-subtab-count" id="relModeCountPerson">12</span>
+              </button>
+              <button type="button" class="bwk-rel-type-btn" data-rel-mode="subject" id="btnRelModeSubject">
+                📦 关联条目 (<code id="relModeSubjectPathText">/add_related/subject/anime</code>) <span class="bwk-subtab-count" id="relModeCountSubject">6</span>
+              </button>
+            </div>
+
+            <div class="bwk-related-split-grid">
+              <!-- 左栏：已关联列表 ul#crtRelateSubjects > li (Spec Page 12 :592) -->
+              <div>
+                <div class="bwk-field-label">
+                  <span>已关联列表 (<code>ul#crtRelateSubjects &gt; li</code>)</span>
+                  <span class="bwk-field-hint" id="bwkRelatedLeftSummary">支持排序号、职位下拉框 select、参与集数与 a.del 删除</span>
+                </div>
+
+                <ul id="crtRelateSubjects">
+                  <li data-rel-id="86246">
+                    <img src="https://lain.bgm.tv/pic/crt/m/b5/b6/86246_crt_L0Zmt.jpg" alt="芙莉莲" class="bwk-rel-thumb" referrerpolicy="no-referrer" />
+                    <div class="bwk-rel-title-col">
+                      <a href="subject-characters.html?id=400602" class="title">芙莉莲 (フリーレン)</a>
+                      <span class="bwk-rel-submeta">CV: 種﨑敦美 · ID #86246</span>
+                    </div>
+                    <input type="number" class="inputtext bwk-rel-sort-input" value="1" title="排序权重" />
+                    <select class="bwk-rel-role-select" title="角色定位/职位">
+                      <option value="主角" selected>主角</option>
+                      <option value="配角">配角</option>
+                      <option value="客串">客串</option>
+                      <option value="旁白">旁白</option>
+                    </select>
+                    <input type="text" class="inputtext bwk-rel-eps-input" value="全话登場" placeholder="参与集数/备注" />
+                    <a href="javascript:void(0);" class="del" data-act="del-related" data-id="86246" title="删除此关联">×</a>
+                  </li>
+                </ul>
+
+                <div class="bwk-submit-footer" style="margin-top:12px;">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button type="button" class="btnGray" id="btnSortRelatedByOrder">⇅ 按排序号重新排列</button>
+                    <button type="button" class="btnGray" id="btnUndoDeleteRelated" hidden>↩ 撤销刚才移除的关联</button>
+                  </div>
+                  <!-- Spec Page 12 硬性要求：底部「保存关联修改」按钮 -->
+                  <input type="button" class="inputBtn" id="btnSaveRelatedChanges" value="保存关联修改" />
+                </div>
+              </div>
+
+              <!-- 右栏：搜索添加面板 input#subjectName + 搜索按钮 + 点击 + 号加入左侧列表 (Spec Page 12 :593) -->
+              <aside class="bwk-related-search-panel" aria-label="搜索并添加关联项">
+                <div class="bwk-field-label">
+                  <span id="bwkSearchPanelTitle">🔍 检索并添加关联角色</span>
+                  <span class="bwk-field-hint">点击 <strong>+</strong> 加入左侧</span>
+                </div>
+                <div class="bwk-search-input-row">
+                  <input type="text" id="subjectName" name="subjectName" class="inputtext" placeholder="输入名称、日文原名、声优或 ID 检索..." />
+                  <input type="button" class="inputBtn" id="btnSearchRelated" value="搜索" style="padding:8px 15px;flex-shrink:0;" />
+                </div>
+                <div class="bwk-field-hint" style="margin-bottom:10px;" id="bwkCandidateResultHint">
+                  候选库匹配结果（点击右侧「+」号直接追加至左侧已关联列表）：
+                </div>
+                <div class="bwk-candidate-list" id="wikiRelatedSearchResults">
+                  <!-- 由 JS 渲染 -->
+                </div>
+              </aside>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ==================== 右侧粘性辅助栏：Infobox 实时预览与维基指南 ==================== -->
+        <aside class="bwk-side-column" aria-label="Infobox 实时渲染预览与维基协力指南">
+          <div class="bwk-side-card">
+            <h3>
+              <span>👁️ Infobox 实时渲染预览</span>
+              <a href="subject.html?id=400602" id="bwkBackToSubjectLink" style="font-size:12px;color:var(--bgm-pink-strong,#d95f6b);text-decoration:none;">查看条目页 ↗</a>
+            </h3>
+            <p class="bwk-field-hint" style="margin:0 0 10px;">
+              左侧修改 WCODE 或表格后，此处实时模拟条目主页左栏 <code>#infobox</code> 的最终展示效果：
+            </p>
+            <ul class="bwk-live-infobox-preview" id="wikiLiveInfoboxPreview">
+              <li><span class="tip">中文名:</span>葬送的芙莉莲</li>
+              <li><span class="tip">话数:</span>28</li>
+              <li><span class="tip">放送开始:</span>2023年9月29日</li>
+            </ul>
+          </div>
+
+          <div class="bwk-side-card">
+            <h3>
+              <span>📖 WCODE 语法速查</span>
+              <span class="bwk-rev-editor-badge">Wiki 规范</span>
+            </h3>
+            <div style="font-size:12px;color:var(--text-secondary,#57606a);line-height:1.65;display:flex;flex-direction:column;gap:8px;">
+              <div><code>|属性名= 属性值</code>：标准单行键值属性（如 <code>|导演= 斎藤圭一郎</code>）。</div>
+              <div><code>|分组名={
+[子项名|子项值]
+}</code>：多值列表或跨地区出版版本折叠组（如别名、单行本各版本 ISBN）。</div>
+              <div>点击上方 <strong>「切换至表格模式 »」</strong> 可自动将复杂嵌套 WCODE 解析为可视化表单行。</div>
+            </div>
+          </div>
+
+          <div class="bwk-side-card">
+            <h3>
+              <span>🧭 条目内页全链路导航</span>
+            </h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="bwkQuickFamilyNav">
+              <a href="subject.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">🎬 条目概览</a>
+              <a href="subject-ep.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">📺 章节列表</a>
+              <a href="subject-characters.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">🎭 角色列表</a>
+              <a href="subject-persons.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">🎬 制作人员</a>
+              <a href="subject-comments.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">💬 吐槽箱</a>
+              <a href="subject-reviews.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;">📝 评论讨论</a>
+              <a href="subject-stats.html?id=400602" class="btnGray" style="text-decoration:none;justify-content:flex-start;grid-column:span 2;">📊 条目透视统计 (/stats)</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== 个性化外观设置模态窗 (#customizeModal) ==================== -->
+  <div class="glass-modal-backdrop" id="customizeModal" hidden>
+    <div class="frosted-modal-dialog" role="dialog" aria-labelledby="customizeModalTitle">
+      <header class="modal-head">
+        <div>
+          <span class="modal-kicker">SUBJECT AMBIENT ENGINE</span>
+          <h3 id="customizeModalTitle">✨ 外观模式与主题强调色设置</h3>
+        </div>
+        <button type="button" class="ep-pop-close" onclick="document.getElementById('customizeModal').hidden = true;">✕</button>
+      </header>
+      <div class="modal-body">
+        <div class="form-block">
+          <label class="form-label">光影模式 (Theme Mode)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.theme='light';this.classList.add('is-selected');this.nextElementSibling.classList.remove('is-selected');">☀️ 流光浅色 (宣纸白毛玻璃)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.theme='dark';this.classList.add('is-selected');this.previousElementSibling.classList.remove('is-selected');">🌙 曜石深色 (午夜霓虹玻璃)</button>
+          </div>
+        </div>
+        <div class="form-block">
+          <label class="form-label">品牌强调色 (Accent Color)</label>
+          <div class="theme-choice-grid">
+            <button type="button" class="choice-pill is-selected" onclick="document.documentElement.dataset.accent='pink';">🌸 番组珊瑚粉 (#F09199)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='blue';">💎 晴空湛蓝 (#3B82F6)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='amber';">🍊 琥珀暖金 (#F59E0B)</button>
+            <button type="button" class="choice-pill" onclick="document.documentElement.dataset.accent='emerald';">🌿 翡翠薄荷 (#10B981)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 极简毛玻璃页脚 (#footer) ==================== -->
+  <footer class="glass-footer" id="footer">
+    <div class="footer-bottom" style="display:flex;justify-content:space-between;align-items:center;padding:24px 0;">
+      <span>© 2008-2026 Bangumi (a.k.a. Chobits) · Subject Wiki Edit &amp; Revision Prototype (B9 / Page 12)</span>
+      <span>
+        <a href="index.html" style="color:var(--accent);text-decoration:none;font-weight:700;margin-right:16px;">🏠 返回主页原型 (index.html)</a>
+        <span>Ambient Glass &amp; Oil-UI Architecture</span>
+      </span>
+    </div>
+  </footer>
+
+  <script src="js/bangumi-wiki-data.js?v=1"></script>
+  <script src="js/bangumi-wiki.js?v=1"></script>
+  <script src="js/bangumi-shell.js?v=6"></script>
+</body>
+</html>

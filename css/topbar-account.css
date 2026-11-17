@@ -1,0 +1,957 @@
+/* ============================================================
+   Bangumi 顶栏 · 品牌图标动效强化 / 昼夜开关重绘 / 账号卡片重做
+   ------------------------------------------------------------
+   1. 品牌图标：去掉悬停变色，改为「形变」反馈；扫描线与眨眼
+      幅度加大，图标本体常驻微幅摇摆。
+   2. 昼夜开关：废弃原 Margin 云朵 / 星海拟物，改为干净的
+      「暖沙 ↔ 靛夜」双色胶囊 + 单枚日/月滑块。
+   3. 账号卡片：删除金属珠链（Canvas + Verlet 物理）与挂孔，
+      删除头像背后的模糊空背景，改为以头像为锚点的浮层卡片，
+      并把「个人时光机」提到正面作为主入口。
+   纯视觉 + 交互形态层，不改动业务按钮与链接指向。
+   ============================================================ */
+
+/* ============================================================
+   1. 品牌图标：去变色、动效加大
+   ============================================================ */
+
+/* 1.1 悬停不再染色，只做弹性缩放与描边加深（浅色 / 深色同源） */
+.top-left .brand:hover .tv,
+html[data-theme="dark"] .top-left .brand:hover .tv {
+  color: var(--ink) !important;
+  transform: scale(1.09) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--ink) 26%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 82%, transparent),
+    0 8px 18px -8px color-mix(in srgb, var(--ink) 32%, transparent) !important;
+}
+
+html[data-theme="dark"] .top-left .brand:hover .tv {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #fff 32%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 18%, transparent),
+    0 10px 24px -10px #000 !important;
+}
+
+/* 1.2 彻底移除扫描线变色效果 */
+.top-left .brand .tv-scan {
+  display: none !important;
+  opacity: 0 !important;
+  background: none !important;
+  animation: none !important;
+}
+
+/* 1.3 眼睛：眨眼更明显，频率更快 */
+.top-left .brand .tv-eye {
+  animation: tvBlinkBig 3.6s ease-in-out infinite !important;
+}
+
+.top-left .brand .tv-eye:nth-of-type(2) {
+  animation-delay: 0.05s !important;
+}
+
+@keyframes tvBlinkBig {
+  0%, 82%, 100% { transform: scaleY(1); }
+  86%           { transform: scaleY(0.06); }
+  90%           { transform: scaleY(0.06); }
+  94%           { transform: scaleY(1); }
+}
+
+/* 1.4 图标本体常驻 Q 弹呼吸缩放动效 + 悬停弹性放大 */
+.top-left .brand .tv svg {
+  transform-box: fill-box;
+  transform-origin: 50% 55%;
+  animation: tvScalePulse 3.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite !important;
+}
+
+.top-left .brand:hover .tv svg {
+  animation: tvHoverZoomBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+@keyframes tvScalePulse {
+  0%, 100% { transform: scale(1); }
+  18%      { transform: scale(1.14, 0.92); }
+  34%      { transform: scale(0.94, 1.12); }
+  50%      { transform: scale(1.08, 1.08); }
+  68%      { transform: scale(0.98, 1.02); }
+}
+
+@keyframes tvHoverZoomBounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.24, 0.9); }
+  70%  { transform: scale(0.95, 1.18); }
+  100% { transform: scale(1.14); }
+}
+
+/* 1.5 悬停：天线摆幅更大 */
+.top-left .brand:hover .tv-antenna {
+  animation: tvAntennaBig 0.72s var(--ease) 1 !important;
+}
+
+@keyframes tvAntennaBig {
+  0%   { transform: rotate(0deg); }
+  26%  { transform: rotate(-16deg); }
+  56%  { transform: rotate(11deg); }
+  80%  { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ============================================================
+   2. 昼夜开关：暖沙 ↔ 靛夜（无云朵、无海浪、无星海）
+   ============================================================ */
+.ts {
+  --ts-w: 58px;
+  --ts-h: 30px;
+  --ts-knob: 24px;
+  width: var(--ts-w) !important;
+  height: var(--ts-h) !important;
+  border-radius: 999px !important;
+  background: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 轨道 */
+.ts .ts-c {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background: linear-gradient(135deg, #f6e7c8 0%, #efd9a8 52%, #e8cf98 100%) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(120, 92, 40, 0.22),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent) !important;
+  transition: background 0.45s var(--ease), box-shadow 0.45s var(--ease) !important;
+}
+
+.ts .ts-c::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* 轨道两侧的静态刻度点：左侧日、右侧月 */
+.ts .ts-c::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.5;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(180, 132, 20, 0.55) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 85% 50%, rgba(70, 80, 110, 0.5) 0 1.6px, transparent 1.7px);
+  transition: opacity 0.4s ease;
+}
+
+/* 关掉旧的云 / 星 / 光环 */
+.ts .ts-clouds,
+.ts .ts-stars,
+.ts .ts-halo,
+.ts .ts-sun {
+  display: none !important;
+}
+
+/* 滑块底盘 */
+.ts .ts-circle {
+  position: absolute !important;
+  left: 3px !important;
+  top: 3px !important;
+  width: var(--ts-knob) !important;
+  height: var(--ts-knob) !important;
+  border-radius: 999px !important;
+  background: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0) !important;
+  transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.44, 1) !important;
+  z-index: 3;
+}
+
+/* 日 / 月本体共用 .ts-sm */
+.ts .ts-sm {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background: radial-gradient(circle at 34% 30%, #ffe89a 0%, #f5c53c 44%, #dda21b 100%) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.72),
+    0 0 0 2.5px rgba(245, 197, 60, 0.24),
+    0 1px 3px rgba(120, 92, 40, 0.28) !important;
+  filter: none !important;
+  transition: background 0.42s ease, box-shadow 0.42s ease, transform 0.42s var(--ease) !important;
+}
+
+/* 深色：月牙（用同色圆偏移遮出一弯） */
+.ts .ts-sm::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  background: #d9dde8;
+  transition: opacity 0.42s ease;
+}
+
+html[data-theme="dark"] .ts .ts-c {
+  background: linear-gradient(135deg, #1a1f30 0%, #232a3f 55%, #2c3350 100%) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06),
+    0 0 0 1px color-mix(in srgb, #fff 14%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts .ts-c::after {
+  opacity: 0.7;
+  background:
+    radial-gradient(circle at 15% 50%, rgba(255, 214, 130, 0.55) 0 1.6px, transparent 1.7px),
+    radial-gradient(circle at 85% 50%, rgba(190, 205, 240, 0.6) 0 1.6px, transparent 1.7px);
+}
+
+html[data-theme="dark"] .ts .ts-circle {
+  transform: translateX(calc(var(--ts-w) - var(--ts-knob) - 6px)) !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm {
+  background: radial-gradient(circle at 34% 30%, #f2f4fa 0%, #cdd3e2 46%, #a7aec2 100%) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    0 0 0 2.5px rgba(190, 205, 240, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* 月面阴影：偏右的一块暗斑，让银圆读成月相 */
+html[data-theme="dark"] .ts .ts-sm::after {
+  opacity: 1;
+  background: radial-gradient(circle at 74% 30%, rgba(255, 255, 255, 0) 0 42%, #b9c0d2 43%, #aab2c6 100%);
+  mix-blend-mode: normal;
+}
+
+/* 旧的拟物月体彻底停用 */
+.ts .ts-moon,
+.ts .ts-spot {
+  display: none !important;
+}
+
+/* 悬停：滑块轻微放大，轨道描边加深 */
+.ts:hover .ts-sm {
+  transform: scale(1.06);
+}
+
+.ts:hover .ts-c {
+  box-shadow:
+    inset 0 1px 2px rgba(120, 92, 40, 0.2),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts:hover .ts-c {
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06),
+    0 0 0 1px color-mix(in srgb, #fff 28%, transparent) !important;
+}
+
+.ts:active .ts-sm {
+  transform: scale(0.94);
+}
+
+/* ============================================================
+   3. 账号卡片：去掉珠链 / 挂孔 / 模糊底，正面加时光机入口
+   ============================================================ */
+.idcl-stage {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 320;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* 珠链画布彻底退出布局 */
+.idcl-chain {
+  display: none !important;
+}
+
+.idcl-card {
+  position: fixed !important;
+  width: 300px !important;
+  height: 452px !important;
+  perspective: 1400px !important;
+  transform-origin: calc(100% - 34px) 0% !important;
+  pointer-events: auto;
+  cursor: default !important;
+  user-select: none;
+  will-change: transform, opacity;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.idcl-card.idcl-in {
+  opacity: 1;
+}
+
+/* 入场：从锚点向下展开 */
+.idcl-card .idcl-flipper {
+  transform-origin: 50% 0%;
+}
+
+.idcl-card.idcl-in .idcl-face {
+  animation: idclDrop 0.34s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+@keyframes idclDrop {
+  0%   { opacity: 0; translate: 0 -10px; }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+.idcl-card:active {
+  cursor: default !important;
+}
+
+/* 挂孔删除 */
+.idcl-hole {
+  display: none !important;
+}
+
+/* 提示胶囊：贴卡片底部居中 */
+.idcl-hint {
+  bottom: -30px !important;
+  font: 500 10px/1.2 var(--sans) !important;
+  padding: 4px 10px !important;
+}
+
+/* 卡片本体：与页面同源的软玻璃白（不是塑料工牌） */
+.idcl-face {
+  border-radius: 22px !important;
+  background:
+    radial-gradient(120% 100% at 20% 0%, rgba(255, 255, 255, 0.96) 0%, rgba(250, 249, 246, 0.99) 60%, rgba(244, 242, 237, 1) 100%) !important;
+  box-shadow:
+    0 28px 60px -18px rgba(0, 0, 0, 0.34),
+    0 7px 18px -8px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 0 0 1px rgba(0, 0, 0, 0.07) !important;
+}
+
+html[data-theme="dark"] .idcl-face {
+  background:
+    radial-gradient(120% 100% at 20% 0%, rgba(40, 41, 46, 0.98) 0%, rgba(30, 31, 35, 1) 60%, rgba(24, 25, 28, 1) 100%) !important;
+  box-shadow:
+    0 30px 66px -18px rgba(0, 0, 0, 0.8),
+    0 8px 22px -8px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.09) !important;
+}
+
+/* 全息镭射条收窄，别抢戏 */
+.idcl-holo {
+  width: 5px !important;
+  right: 13px !important;
+  opacity: 0.34 !important;
+}
+
+/* 正面内衬 */
+.idcl-front {
+  padding: 18px 18px 14px !important;
+}
+
+.idcl-header {
+  margin-bottom: 14px !important;
+}
+
+/* 头像：不再是 146px 高的模糊底框，而是一枚干净圆形头像 */
+.idcl-photo {
+  width: 92px !important;
+  height: 92px !important;
+  margin: 2px auto 12px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.idcl-photo-bg {
+  display: none !important;
+}
+
+.idcl-photo-face {
+  width: 92px !important;
+  height: 92px !important;
+  border-radius: 999px !important;
+  object-fit: cover;
+  box-shadow:
+    0 10px 24px -10px rgba(0, 0, 0, 0.4),
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    0 0 0 4px color-mix(in srgb, var(--ink) 8%, transparent) !important;
+}
+
+html[data-theme="dark"] .idcl-photo-face {
+  box-shadow:
+    0 10px 26px -10px rgba(0, 0, 0, 0.7),
+    0 0 0 3px rgba(30, 31, 35, 0.95),
+    0 0 0 4px rgba(255, 255, 255, 0.16) !important;
+}
+
+/* 认证角标贴着头像右下 */
+.idcl-verified {
+  right: calc(50% - 44px) !important;
+  bottom: 2px !important;
+  width: 20px !important;
+  height: 20px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22), 0 0 0 2.4px var(--surface) !important;
+}
+
+/* 姓名与身份 */
+.idcl-name {
+  font: 700 19px/1.15 var(--sans) !important;
+  letter-spacing: -0.015em !important;
+  text-align: center;
+  margin-bottom: 5px !important;
+}
+
+.idcl-roleline {
+  justify-content: center !important;
+  gap: 8px;
+  margin-bottom: 9px !important;
+}
+
+.idcl-role {
+  font: 500 10.5px/1 var(--sans) !important;
+  opacity: 0.62 !important;
+}
+
+.idcl-expnum {
+  font: 500 9.5px/1 var(--mono) !important;
+  opacity: 0.5 !important;
+}
+
+.idcl-exp {
+  height: 3px !important;
+  margin-bottom: 12px !important;
+  background: color-mix(in srgb, var(--ink) 8%, transparent) !important;
+}
+
+.idcl-exp i {
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #f59e0b)) !important;
+}
+
+/* 正面主入口：个人时光机 */
+.idcl-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  margin-bottom: 11px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 92%, #fff) 0%,
+    var(--accent-strong) 100%);
+  box-shadow:
+    0 8px 18px -10px color-mix(in srgb, var(--accent) 85%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.idcl-timeline:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow:
+    0 12px 22px -10px color-mix(in srgb, var(--accent) 90%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.idcl-timeline:active {
+  transform: scale(0.985);
+}
+
+.idcl-timeline-l {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.idcl-timeline-l svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.idcl-timeline-l b {
+  display: block;
+  font: 600 12.5px/1.2 var(--sans);
+  letter-spacing: 0.01em;
+}
+
+.idcl-timeline-l small {
+  display: block;
+  margin-top: 2px;
+  font: 400 9.5px/1 var(--mono);
+  opacity: 0.78;
+  letter-spacing: 0.02em;
+}
+
+.idcl-timeline-arrow {
+  font: 500 13px/1 var(--sans);
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+/* 统计三栏 */
+.idcl-stats {
+  padding: 9px 4px !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--ink) 3.6%, transparent) !important;
+  margin-bottom: 10px !important;
+}
+
+html[data-theme="dark"] .idcl-stats {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.idcl-stats b {
+  font: 700 14px/1.1 var(--mono) !important;
+}
+
+.idcl-stats span {
+  font: 400 10px/1 var(--sans) !important;
+  opacity: 0.56 !important;
+}
+
+/* 底部信息行 */
+.idcl-idrow {
+  border-top: 1px dashed color-mix(in srgb, var(--ink) 12%, transparent) !important;
+  padding: 8px 2px 6px !important;
+  margin-top: auto !important;
+}
+
+.idcl-qr {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 8px !important;
+}
+
+.idcl-footer {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent) !important;
+  padding-top: 8px !important;
+}
+
+html[data-theme="dark"] .idcl-footer {
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 背面：去掉磁条（链条与工牌身份没有了），改为干净的账号中枢 */
+.idcl-back {
+  padding: 20px 18px 14px !important;
+}
+
+.idcl-stripe {
+  display: none !important;
+}
+
+.idcl-idnum {
+  margin-bottom: 8px;
+}
+
+/* 翻转过渡：从逐帧物理改为 CSS 补间 */
+.idcl-flipper {
+  transition: transform 0.62s cubic-bezier(0.2, 0.85, 0.25, 1);
+}
+
+/* 悬停反光：只在卡片范围内跟随 */
+.idcl-face::before {
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 24%),
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0.1) 42%,
+    transparent 72%
+  ) !important;
+}
+
+/* 窄屏：卡片宽度回收 */
+@media (max-width: 760px) {
+  .idcl-card {
+    width: 276px !important;
+    height: 440px !important;
+  }
+  .idcl-photo,
+  .idcl-photo-face {
+    width: 82px !important;
+    height: 82px !important;
+  }
+}
+
+/* ---------- 双面朝向与不透明度校正（v23） ----------
+   之前 .idcl-back 的 rotateY(180deg) 被后置规则压成 none，
+   导致正反两面同时朝前、卡片透出下层页面文字。这里显式钉死。 */
+.idcl-flipper {
+  transform-style: preserve-3d !important;
+}
+
+.idcl-front {
+  transform: rotateY(0deg) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+.idcl-back {
+  transform: rotateY(180deg) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* 面底不再让下层文字透上来：接近实心的暖白纸面 */
+.idcl-face {
+  background:
+    linear-gradient(180deg,
+      #ffffff 0%,
+      #fdfcf9 46%,
+      #f8f6f1 100%) !important;
+}
+
+html[data-theme="dark"] .idcl-face {
+  background:
+    linear-gradient(180deg,
+      #24252a 0%,
+      #1e1f24 46%,
+      #191a1e 100%) !important;
+}
+
+/* 顶部那层白色径向高光会洗淡品牌行，收敛到很轻的一角 */
+.idcl-face::before {
+  background: radial-gradient(
+    220px circle at var(--mx, 82%) var(--my, 0%),
+    rgba(255, 255, 255, 0.22),
+    transparent 68%
+  ) !important;
+}
+
+html[data-theme="dark"] .idcl-face::before {
+  background: radial-gradient(
+    220px circle at var(--mx, 82%) var(--my, 0%),
+    rgba(255, 255, 255, 0.08),
+    transparent 68%
+  ) !important;
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .top-left .brand .tv-scan,
+  .top-left .brand .tv-eye,
+  .top-left .brand .tv svg,
+  .top-left .brand:hover .tv-antenna {
+    animation: none !important;
+  }
+  .idcl-flipper,
+  .idcl-card,
+  .ts .ts-circle,
+  .ts .ts-sm {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   9. 昼夜开关 v24：中性轨道 + 白瓷滑块 + 日月刻印
+   （彻底离开糖果色球体，与页面软玻璃语法同源）
+   ============================================================ */
+.ts {
+  --ts-w: 56px;
+  --ts-h: 28px;
+  --ts-knob: 22px;
+}
+
+/* 轨道：一块中性凹槽，不再自带颜色叙事 */
+.ts .ts-c {
+  background: color-mix(in srgb, var(--ink) 7%, transparent) !important;
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.55),
+    0 0 0 1px color-mix(in srgb, var(--ink) 9%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts .ts-c {
+  background: rgba(255, 255, 255, 0.09) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.11) !important;
+}
+
+/* 去掉轨道内部的静态刻度点 */
+.ts .ts-c::after {
+  display: none !important;
+}
+
+.ts .ts-c::before {
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent) !important;
+}
+
+/* 滑块：一枚白瓷圆钮，带极轻投影 */
+.ts .ts-circle {
+  left: 3px !important;
+  top: 3px !important;
+  width: var(--ts-knob) !important;
+  height: var(--ts-knob) !important;
+  background: var(--surface) !important;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.36, 0.44, 1),
+    background 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+
+html[data-theme="dark"] .ts .ts-circle {
+  background: #2b2c31 !important;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+  transform: translateX(calc(var(--ts-w) - var(--ts-knob) - 6px)) !important;
+}
+
+/* 日 / 月：圆钮里的一枚小刻印 */
+.ts .ts-sm {
+  width: 13px !important;
+  height: 13px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(160deg, #ffc857 0%, #f0a01c 100%) !important;
+  box-shadow: 0 0 0 2.5px rgba(240, 160, 28, 0.16) !important;
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s var(--ease) !important;
+}
+
+/* 月：偏白的圆 + 偏移的同色掩膜凹出月牙 */
+.ts .ts-sm::after {
+  opacity: 0 !important;
+  background: var(--surface) !important;
+  transition: opacity 0.28s ease !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm {
+  background: linear-gradient(160deg, #eef1f7 0%, #c8cee0 100%) !important;
+  box-shadow: 0 0 0 2.5px rgba(200, 206, 224, 0.14) !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm::after {
+  opacity: 1 !important;
+  background: radial-gradient(
+    circle at 76% 34%,
+    transparent 0 60%,
+    #2b2c31 61% 100%
+  ) !important;
+}
+
+/* 悬停与按压：克制 */
+.ts:hover .ts-sm {
+  transform: none !important;
+}
+
+.ts:hover .ts-circle {
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(0, 0, 0, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.ts:hover .ts-c {
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--ink) 14%, transparent),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.55),
+    0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts:hover .ts-c {
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.18) !important;
+}
+
+.ts:active .ts-sm {
+  transform: scale(0.92) !important;
+}
+
+.ts:active .ts-circle {
+  transform: scale(0.94) !important;
+}
+
+html[data-theme="dark"] .ts:active .ts-circle {
+  transform: translateX(calc(var(--ts-w) - var(--ts-knob) - 6px)) scale(0.94) !important;
+}
+
+/* 焦点可见性 */
+.ts:focus-visible {
+  outline: none;
+}
+
+.ts:focus-visible .ts-c {
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent) !important;
+}
+
+/* ============================================================
+   10. 昼夜开关 v25：把「橘子糖」换成「铜章 / 银月」
+   滑块里的日改成细环 + 微光，深色下的月改成干净月牙
+   ============================================================ */
+.ts .ts-sm {
+  width: 12px !important;
+  height: 12px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 1.6px solid color-mix(in srgb, #b8791a 78%, transparent) !important;
+  position: relative;
+}
+
+.ts .ts-sm::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(240, 178, 60, 0.26) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.ts .ts-sm::after {
+  content: "";
+  position: absolute;
+  inset: 2.4px;
+  border-radius: 999px;
+  background: #e8a83a !important;
+  opacity: 1 !important;
+  transition: background 0.3s ease, inset 0.3s ease, opacity 0.28s ease !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm {
+  border-color: color-mix(in srgb, #c2c9dc 72%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm::before {
+  background: radial-gradient(circle, rgba(200, 210, 235, 0.2) 0%, transparent 68%);
+}
+
+html[data-theme="dark"] .ts .ts-sm::after {
+  inset: 1.6px;
+  left: 4.4px;
+  background: #d6dbe8 !important;
+  opacity: 1 !important;
+}
+
+/* ============================================================
+   11. 昼夜开关 v26：把「橘子球」改成线性日 / 线月
+   滑块里不再放实心球，改成细描边圆 + 4 条射线，与顶栏线性图标同源
+   ============================================================ */
+.ts .ts-sm {
+  width: 13px !important;
+  height: 13px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 1.4px solid color-mix(in srgb, #a8670f 82%, transparent) !important;
+  border-radius: 999px !important;
+  position: relative;
+  transition: border-color 0.3s ease !important;
+}
+
+/* 四条射线：太阳 */
+.ts .ts-sm::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  background:
+    linear-gradient(#a8670f, #a8670f) 50% 0 / 1.2px 2.6px no-repeat,
+    linear-gradient(#a8670f, #a8670f) 50% 100% / 1.2px 2.6px no-repeat,
+    linear-gradient(#a8670f, #a8670f) 0 50% / 2.6px 1.2px no-repeat,
+    linear-gradient(#a8670f, #a8670f) 100% 50% / 2.6px 1.2px no-repeat;
+  opacity: 0.62;
+  transition: opacity 0.3s ease, background 0.3s ease !important;
+  pointer-events: none;
+}
+
+/* 去掉 v25 的实心球 */
+.ts .ts-sm::after {
+  display: none !important;
+}
+
+/* 悬停：射线亮一点，不放大 */
+.ts:hover .ts-sm::before { opacity: 0.9; }
+
+/* 深色：换成细线弯月（用滑块底色遮出月牙） */
+html[data-theme="dark"] .ts .ts-sm {
+  border-color: color-mix(in srgb, #c2c9dc 76%, transparent) !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm::before {
+  opacity: 0 !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm::after {
+  display: block !important;
+  content: "";
+  position: absolute;
+  inset: -1.2px;
+  border-radius: 999px;
+  background: #2b2c31;
+  transform: translate(4.6px, -3.2px);
+  box-shadow: 0 0 0 0 transparent;
+  opacity: 1 !important;
+}
+
+/* ============================================================
+   12. 昼夜开关 v27：图标改用 SVG 遮罩，与顶栏线性图标同一笔触
+   日 = 圆 + 8 道短线；月 = 一弯月牙。不再用 CSS 拼圆点。
+   ============================================================ */
+.ts .ts-sm {
+  width: 15px !important;
+  height: 15px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: #b8791a !important;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.1' stroke-linecap='round'><circle cx='12' cy='12' r='4.1'/><path d='M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.7 1.7M17.1 17.1l1.7 1.7M18.8 5.2l-1.7 1.7M6.9 17.1l-1.7 1.7'/></svg>") center / 15px 15px no-repeat !important;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.1' stroke-linecap='round'><circle cx='12' cy='12' r='4.1'/><path d='M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.7 1.7M17.1 17.1l1.7 1.7M18.8 5.2l-1.7 1.7M6.9 17.1l-1.7 1.7'/></svg>") center / 15px 15px no-repeat !important;
+  transition: background-color 0.28s ease !important;
+}
+
+.ts .ts-sm::before,
+.ts .ts-sm::after {
+  display: none !important;
+  content: none !important;
+}
+
+html[data-theme="dark"] .ts .ts-sm {
+  background-color: #d3d9e6 !important;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.1' stroke-linecap='round'><path d='M20.6 14.2A8.6 8.6 0 0 1 9.8 3.4a8.7 8.7 0 1 0 10.8 10.8z'/></svg>") center / 15px 15px no-repeat !important;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.1' stroke-linecap='round'><path d='M20.6 14.2A8.6 8.6 0 0 1 9.8 3.4a8.7 8.7 0 1 0 10.8 10.8z'/></svg>") center / 15px 15px no-repeat !important;
+}
+
+.ts:hover .ts-sm { transform: none !important; }
+.ts:active .ts-sm { transform: scale(0.9) !important; }
