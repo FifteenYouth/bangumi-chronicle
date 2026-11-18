@@ -227,21 +227,37 @@ export function extractChannelData(doc, route = {}) {
     const href = a.getAttribute('href') || '#';
     const id = href.match(/\/subject\/(\d+)/)?.[1] || '';
     if (!id || seenIds.has(id)) return;
-    const rawTitle = a.getAttribute('data-original-title') || a.getAttribute('title') || a.textContent || '';
+    const subjTitleA =
+      node.tagName === 'A'
+        ? null
+        : node.querySelector?.('p.title a[href*="/subject/"], .title a[href*="/subject/"], a.l[href*="/subject/"]');
+    const rawTitle =
+      a.getAttribute('data-original-title') ||
+      a.getAttribute('title') ||
+      subjTitleA?.getAttribute('title') ||
+      subjTitleA?.textContent ||
+      a.textContent ||
+      '';
     const title =
-      node.querySelector?.('.info a, p a')?.textContent?.trim() ||
-      rawTitle.split('<br')[0].replace(/<[^>]+>/g, '').trim();
+      subjTitleA?.textContent?.trim() ||
+      rawTitle
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .split('<br')[0]
+        .replace(/<[^>]+>/g, '')
+        .trim();
     const img = node.querySelector?.('img');
     const bg = parseBgUrl(node) || parseBgUrl(a);
     const rawCov = normUrl(img?.getAttribute('src') || bg || '');
     if (!title || !rawCov || /no_icon_subject/i.test(rawCov)) return;
+    const infoText = node.querySelector?.('small.grey, .info')?.textContent?.replace(/\s+/g, ' ')?.trim() || '';
     seenIds.add(id);
     newReleases.push({
       id,
       title,
       href,
       cover: upgradeCoverUrl(rawCov),
-      followText: node.querySelector?.('small.grey')?.textContent?.trim() || '近期热议',
+      followText: infoText && infoText !== title ? infoText : '近期热议',
     });
   });
 
@@ -311,23 +327,36 @@ export function extractChannelData(doc, route = {}) {
   // 右侧栏分类浏览入口 (.sideInner ul.grouped)
   const facets = [];
   doc.querySelectorAll('.sideInner ul.grouped').forEach((ul) => {
-    const groupTitle = ul.querySelector('li.subtitle')?.textContent?.replace(/\s+/g, ' ')?.trim() || '分类索引';
+    const prev = ul.previousElementSibling;
+    const prevHeading =
+      prev && (prev.classList?.contains('subtitle') || /^H[1-6]$/i.test(prev.tagName))
+        ? prev.textContent.replace(/\s+/g, ' ').trim()
+        : '';
+    const groupTitle =
+      ul.querySelector('li.subtitle')?.textContent?.replace(/\s+/g, ' ')?.trim() ||
+      prevHeading ||
+      '分类索引';
     const values = [];
     ul.querySelectorAll('li:not(.subtitle) a[href]').forEach((a) => {
       const label = a.textContent.trim();
       const href = a.getAttribute('href') || '#';
-      if (label) values.push({ label, href });
+      if (label && !href.startsWith('javascript')) values.push({ label, href });
     });
     if (values.length) facets.push({ title: groupTitle, values });
   });
 
   // 右侧栏热门标签 (.SidePanel a[href*="/tag/"])
   const tags = [];
-  doc.querySelectorAll('#columnB a[href*="/tag/"], .SidePanel a[href*="/tag/"]').forEach((a) => {
+  doc.querySelectorAll('#columnB a[href*="/tag/"], #columnSubjectBrowserB a[href*="/tag/"], .SidePanel a[href*="/tag/"]').forEach((a) => {
     const name = a.textContent.trim();
     const href = a.getAttribute('href') || '#';
-    if (name && !tags.some((t) => t.name === name)) {
-      tags.push({ name, href });
+    if (!name || name.toLowerCase() === 'more' || !/\/tag\/.+/.test(href)) return;
+    if (!tags.some((t) => t.name === name)) {
+      const cls = a.className || '';
+      const lvMatch = cls.match(/level(\d+)/);
+      const lv = lvMatch ? parseInt(lvMatch[1], 10) : 4;
+      const levelClass = lv >= 6 ? 'lv-high' : lv >= 3 ? 'lv-mid' : 'lv-low';
+      tags.push({ name, href, levelClass });
     }
   });
 

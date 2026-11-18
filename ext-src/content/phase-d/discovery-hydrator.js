@@ -77,7 +77,7 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
   const uidEnc = encodeURIComponent(session?.uid || '');
   const personalBarHtml =
     session?.loggedIn && session?.uid
-      ? `<div class="bch-personal-bar">
+      ? `<div class="bch-personal-strip bch-personal-bar">
           <div class="bch-personal-label">
             <img src="${escapeHtml(session.avatar)}" alt="${escapeHtml(session.nickname)}" class="bch-personal-avatar" referrerpolicy="no-referrer" />
             <span>我的${escapeHtml(meta.label)}收藏夹</span>
@@ -109,12 +109,14 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
     .join('');
 
   const newReleasesHtml = data.newReleases.length
-    ? `<section class="bch-section-card">
-        <div class="bch-sec-head">
+    ? `<section class="bch-glass-card bch-section-card">
+        <div class="bch-section-head bch-sec-head">
           <div class="bch-sec-title-group">
-            <h2 class="bch-sec-title">✨ 热门焦点推荐</h2>
+            <h2 class="bch-section-title bch-sec-title">✨ 热门焦点推荐</h2>
           </div>
-          <a href="/${data.channel}/browser" class="bch-more-link">分类浏览 »</a>
+          <div class="bch-section-tools bch-sec-actions">
+            <a href="/${data.channel}/browser" class="bch-mini-btn bch-more-link">分类浏览 »</a>
+          </div>
         </div>
         <div class="bch-spotlight-grid">
           ${data.newReleases
@@ -139,14 +141,16 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
     : '';
 
   const blogsHtml = data.blogs.length
-    ? `<section class="bch-section-card">
-        <div class="bch-sec-head">
+    ? `<section class="bch-glass-card bch-section-card">
+        <div class="bch-section-head bch-sec-head">
           <div class="bch-sec-title-group">
-            <h2 class="bch-sec-title">📝 ${escapeHtml(meta.label)}日志与长评</h2>
+            <h2 class="bch-section-title bch-sec-title">📝 ${escapeHtml(meta.label)}日志与长评</h2>
           </div>
-          <a href="/${data.channel}/blog" class="bch-more-link">更多日志 »</a>
+          <div class="bch-section-tools bch-sec-actions">
+            <a href="/${data.channel}/blog" class="bch-mini-btn bch-more-link">更多日志 »</a>
+          </div>
         </div>
-        <div class="bch-blog-list">
+        <div class="bch-entry-list bch-blog-list">
           ${data.blogs
             .map(
               (b) =>
@@ -167,12 +171,14 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
     : '';
 
   const topicsHtml = data.topics.length
-    ? `<section class="bch-section-card">
-        <div class="bch-sec-head">
+    ? `<section class="bch-glass-card bch-section-card">
+        <div class="bch-section-head bch-sec-head">
           <div class="bch-sec-title-group">
-            <h2 class="bch-sec-title">💬 最新${escapeHtml(meta.label)}讨论</h2>
+            <h2 class="bch-section-title bch-sec-title">💬 最新${escapeHtml(meta.label)}讨论</h2>
           </div>
-          <a href="/rakuen" class="bch-more-link">进入超展开 »</a>
+          <div class="bch-section-tools bch-sec-actions">
+            <a href="/rakuen" class="bch-mini-btn bch-more-link">进入超展开 »</a>
+          </div>
         </div>
         <div class="bch-topic-table-wrap">
           <table class="bch-topic-table">
@@ -200,7 +206,7 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
     .join('');
 
   const tagsHtml = data.tags
-    .map((tg) => `<a href="${escapeHtml(tg.href)}" class="bch-tag-pill">${escapeHtml(tg.name)}</a>`)
+    .map((tg) => `<a href="${escapeHtml(tg.href)}" class="bch-tag-chip bch-tag-pill ${escapeHtml(tg.levelClass || 'lv-mid')}">${escapeHtml(tg.name)}</a>`)
     .join('');
 
   const html = `
@@ -217,9 +223,9 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
           </div>
           <div class="bch-channel-switcher">${chanSwitcherHtml}</div>
         </div>
-        <div class="bch-subnav-bar">
-          <ul class="bch-subtabs">${subTabsHtml}</ul>
-          <div class="bch-quick-links">
+        <div class="bch-subtabs-row bch-subnav-bar">
+          <ul class="bch-nav-subtabs bch-subtabs">${subTabsHtml}</ul>
+          <div class="bch-hero-actions bch-quick-links">
             <a href="/${data.channel}/chart" class="bch-action-pill is-primary">🏆 ${escapeHtml(meta.label)}排行榜</a>
             <a href="/${data.channel}/tag" class="bch-action-pill">🏷️ 热门标签</a>
             ${data.channel === 'anime' ? `<a href="/calendar" class="bch-action-pill">📅 每日放送</a>` : ''}
@@ -231,14 +237,14 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
 
     <div class="bch-columns-grid">
       <div class="bch-col-main" id="bgmChannelColA">
-        <section class="bch-section-card">
-          <div class="bch-sec-head">
+        <section class="bch-glass-card bch-section-card">
+          <div class="bch-section-head bch-sec-head">
             <div class="bch-sec-title-group">
-              <h2 class="bch-sec-title">🔥 近期注目${escapeHtml(meta.label)} <small>共 ${data.featured.length} 部</small></h2>
+              <h2 class="bch-section-title bch-sec-title">🔥 近期注目${escapeHtml(meta.label)} <small>共 ${data.featured.length} 部</small></h2>
             </div>
-            <div class="bch-sec-actions">
-              <button type="button" class="bch-toggle-view-btn" id="bgmToggleFeaturedBtn">展开全部</button>
-              <a href="/${data.channel}/browser?sort=trends" class="bch-more-link">全部注目 »</a>
+            <div class="bch-section-tools bch-sec-actions">
+              <button type="button" class="bch-mini-btn bch-toggle-view-btn" id="bgmToggleFeaturedBtn">展开全部</button>
+              <a href="/${data.channel}/browser?sort=trends" class="bch-mini-btn bch-more-link">全部注目 »</a>
             </div>
           </div>
           <ul class="bch-featured-strip" id="bgmFeaturedList">${featuredHtml}</ul>
@@ -248,15 +254,15 @@ export function hydrateChannelPage({ doc, route, session, activatePageStyles }) 
         ${topicsHtml}
       </div>
 
-      <aside class="bch-col-side" id="bgmChannelColB">
+      <aside class="bch-col-sidebar bch-col-side" id="bgmChannelColB">
         ${
           facetsHtml
-            ? `<section class="bch-side-card"><div class="bch-side-head"><h3 class="bch-side-title">🧭 分类浏览索引</h3><a href="/${data.channel}/browser" class="bch-more-link">更多 »</a></div><div class="bch-facets-wrap">${facetsHtml}</div></section>`
+            ? `<section class="bch-glass-card bch-side-card"><div class="bch-section-head bch-side-head"><h3 class="bch-side-title">🧭 分类浏览索引</h3><a href="/${data.channel}/browser" class="bch-mini-btn bch-more-link">更多 »</a></div><div class="bch-facets-wrap">${facetsHtml}</div></section>`
             : ''
         }
         ${
           tagsHtml
-            ? `<section class="bch-side-card"><div class="bch-side-head"><h3 class="bch-side-title">🏷️ 热门${escapeHtml(meta.label)}标签</h3><a href="/${data.channel}/tag" class="bch-more-link">标签广场 »</a></div><div class="bch-tag-cloud">${tagsHtml}</div></section>`
+            ? `<section class="bch-glass-card bch-side-card"><div class="bch-section-head bch-side-head"><h3 class="bch-side-title">🏷️ 热门${escapeHtml(meta.label)}标签</h3><a href="/${data.channel}/tag" class="bch-mini-btn bch-more-link">标签广场 »</a></div><div class="bch-tag-cloud">${tagsHtml}</div></section>`
             : ''
         }
       </aside>
