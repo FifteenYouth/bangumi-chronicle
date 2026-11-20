@@ -857,9 +857,14 @@ export function hydrateSubjectPage({ doc, route, session, activatePageStyles, to
   });
 
   mainEl.addEventListener('click', async (ev) => {
-    if (ev.target.closest('#bgmCopySubjUrlBtn')) {
+    const copyBtn = ev.target.closest('#bgmCopySubjUrlBtn');
+    if (copyBtn) {
       navigator.clipboard?.writeText(location.href);
-      toast?.('已复制条目链接');
+      const origHtml = copyBtn.innerHTML;
+      copyBtn.textContent = '✓ 已复制';
+      setTimeout(() => {
+        copyBtn.innerHTML = origHtml;
+      }, 1400);
       return;
     }
 
@@ -985,10 +990,13 @@ export function hydrateSubjectPage({ doc, route, session, activatePageStyles, to
       return;
     }
 
-    if (ev.target.closest('#bgmSaveInterestBtn')) {
+    const saveInterestBtn = ev.target.closest('#bgmSaveInterestBtn');
+    if (saveInterestBtn) {
       const tagsVal = doc.getElementById('bgmInterestTags')?.value || '';
       const cmtVal = doc.getElementById('bgmInterestComment')?.value || '';
       const priv = Boolean(doc.getElementById('bgmInterestPrivacy')?.checked);
+      const origSaveHtml = saveInterestBtn.innerHTML;
+      saveInterestBtn.textContent = '保存中…';
       try {
         await submitSubjectInterest({
           subjectId: data.id,
@@ -1021,14 +1029,21 @@ export function hydrateSubjectPage({ doc, route, session, activatePageStyles, to
           });
           renderComments();
         }
-        toast?.('收藏与评分已真实保存至 Bangumi');
-      } catch (err) {
-        toast?.('保存失败：' + (err?.message || '请确认登录状态'));
+        saveInterestBtn.textContent = '✓ 已保存';
+        setTimeout(() => {
+          saveInterestBtn.innerHTML = origSaveHtml;
+        }, 1400);
+      } catch {
+        saveInterestBtn.textContent = '保存失败';
+        setTimeout(() => {
+          saveInterestBtn.innerHTML = origSaveHtml;
+        }, 1600);
       }
       return;
     }
 
-    if (ev.target.closest('#bgmRemoveInterestBtn')) {
+    const removeInterestBtn = ev.target.closest('#bgmRemoveInterestBtn');
+    if (removeInterestBtn) {
       if (!confirm('确定要从收藏中抹除该条目吗？')) return;
       try {
         await removeSubjectInterest({
@@ -1036,9 +1051,12 @@ export function hydrateSubjectPage({ doc, route, session, activatePageStyles, to
           gh: data.interest.gh || session?.gh || session?.formhash,
         });
         doc.getElementById('bgmInterestStateLabel').textContent = `未收藏${noun}`;
-        toast?.('已从收藏中抹除');
-      } catch (err) {
-        toast?.('抹除失败：' + (err?.message || '请重试'));
+        mainEl.querySelectorAll('#bgmInterestStatusRow .interest-btn').forEach((b) => b.classList.remove('active'));
+        state.ratingScore = 0;
+        doc.getElementById('bgmRatingHint').textContent = '未评分';
+        mainEl.querySelectorAll('#bgmStarsRow .star-unit').forEach((u) => u.classList.remove('filled'));
+      } catch {
+        /* 忽略异常 */
       }
       return;
     }

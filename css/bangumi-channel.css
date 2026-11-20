@@ -1017,21 +1017,32 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 9px 9px;
+}
+
+.bch-facet-pills > li {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
 }
 
 .bch-facet-pills a {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 12px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 31px;
+  padding: 0 13px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
+  line-height: 1;
   color: var(--ink);
   text-decoration: none;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   border: 1px solid var(--hairline);
   box-shadow: var(--sh-xs);
+  box-sizing: border-box;
   transition: all 0.16s ease;
 }
 

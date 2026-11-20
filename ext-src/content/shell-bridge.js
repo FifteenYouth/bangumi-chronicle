@@ -148,26 +148,8 @@ export function extractSessionFromDOM(doc = document) {
   return result;
 }
 
-export function showToast(msg, doc = document) {
-  let host = doc.getElementById('toastContainer');
-  if (!host && doc.body) {
-    host = doc.createElement('div');
-    host.id = 'toastContainer';
-    host.className = 'toast-container';
-    host.setAttribute('aria-live', 'polite');
-    doc.body.appendChild(host);
-  }
-  if (!host) return;
-  const t = doc.createElement('div');
-  t.className = 'glass-toast';
-  t.innerHTML = '<span>✦</span><span>' + esc(msg) + '</span>';
-  host.appendChild(t);
-  setTimeout(() => {
-    t.style.transition = 'opacity .25s ease, transform .25s ease';
-    t.style.opacity = '0';
-    t.style.transform = 'translateY(-6px)';
-    setTimeout(() => t.remove(), 260);
-  }, 2300);
+export function showToast(_msg, _doc = document) {
+  // 遵照用户交互准则：取消右上角悬浮 Toast 弹窗，所有操作结果均通过页面内原地状态更新直接呈现
 }
 
 function renameLegacyConflictingIds(el) {

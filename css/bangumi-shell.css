@@ -1241,3 +1241,12 @@ html[data-theme="dark"] .bsh-switch-card {
   width: 14.5px !important;
   height: 14.5px !important;
 }
+
+/* 彻底禁用右上角悬浮 Toast 提示框，所有交互直接在页面内原地反馈 */
+#toastContainer,
+.toast-container,
+.glass-toast {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

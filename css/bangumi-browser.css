@@ -377,7 +377,7 @@
 /* --- 3. 双栏主架构 (#columnSubjectBrowserA + #columnSubjectBrowserB) --- */
 .browser-columns-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
+  grid-template-columns: minmax(0, 1fr) 372px;
   gap: 24px;
   align-items: start;
 }
@@ -982,70 +982,103 @@
 .browser-col-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .facet-panel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--hairline);
-  border-radius: 20px;
-  padding: 18px 20px;
+  border-radius: 22px;
+  padding: 20px 20px;
   box-shadow: var(--sh-sm);
 }
 
+.facet-group-block {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--chip) 68%, transparent);
+  border: 1px solid var(--hairline);
+}
+
 .facet-group-block + .facet-group-block {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 0;
+  padding-top: 14px;
   border-top: 1px solid var(--hairline);
 }
 
 .facet-subtitle {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--ink);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .facet-subtitle small {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  font-family: var(--font-round, var(--sans));
+  font-size: 11px;
+  font-weight: 600;
   color: var(--muted);
 }
 
-/* ul.grouped.clearit 胶囊矩阵 */
+/* ul.grouped.clearit 胶囊矩阵（修正 a 标签默认 inline 导致上下行高度塌陷重叠问题） */
 .facet-grouped-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 9px 9px;
   list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.facet-grouped-list > li {
+  display: inline-flex;
   margin: 0;
   padding: 0;
 }
 
 .facet-pill-btn {
   appearance: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 34px;
+  height: 31px;
+  padding: 0 13px;
   border: 1px solid var(--hairline);
-  background: color-mix(in srgb, var(--canvas) 65%, var(--surface));
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 4.5px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
   border-radius: 999px;
+  box-shadow: var(--sh-xs);
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
   transition: all 0.16s ease;
-  line-height: 1.2;
+  line-height: 1;
 }
 
 .facet-pill-btn:hover {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--hairline));
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .facet-pill-btn.focus,
@@ -1053,8 +1086,8 @@
   background: var(--accent);
   color: #ffffff;
   border-color: transparent;
-  font-weight: 600;
-  box-shadow: 0 3px 10px -2px color-mix(in srgb, var(--accent) 45%, transparent);
+  font-weight: 700;
+  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 /* 年代与季度归档矩阵 (#airTimeMenu) */

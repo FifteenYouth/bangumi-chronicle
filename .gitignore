@@ -9,3 +9,8 @@ data/
 BANGUMI_UI_BEAUTIFY_SPEC.md
 patch_subject_css.py
 _*.png
+_root_html_list.txt
+
+# 根目录原型页（仅本地设计参考，不进仓库）
+/*.html
+!/ext-src/**/*.html

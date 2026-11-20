@@ -193,13 +193,21 @@ async function buildCSS() {
 }
 
 function extractLgSvg() {
-  const indexPath = join(root, 'index.html');
-  const html = readFileSync(indexPath, 'utf8');
-  const match = html.match(/<svg\b[^>]*>[\s\S]*?id="lg-bar"[\s\S]*?id="lg-thumb"[\s\S]*?<\/svg>/);
-  if (!match) {
-    throw new Error('未能在 index.html 中提取 #lg-bar / #lg-thumb SVG 滤镜');
+  // 原型页已从仓库移除，SVG 滤镜独立存放在 build-assets 中；
+  // 若该资源缺失，再回退到本地 index.html（仅本机开发时存在）。
+  const assetPath = join(root, 'build-assets', 'lg-filters.svg');
+  if (existsSync(assetPath)) {
+    return readFileSync(assetPath, 'utf8').trim();
   }
-  return match[0];
+
+  const indexPath = join(root, 'index.html');
+  if (existsSync(indexPath)) {
+    const html = readFileSync(indexPath, 'utf8');
+    const match = html.match(/<svg\b[^>]*>[\s\S]*?id="lg-bar"[\s\S]*?id="lg-thumb"[\s\S]*?<\/svg>/);
+    if (match) return match[0];
+  }
+
+  throw new Error('未找到 build-assets/lg-filters.svg，且本地 index.html 中也没有 #lg-bar / #lg-thumb SVG 滤镜');
 }
 
 function virtualAssetsPlugin(cssBundle, lgSvg) {
